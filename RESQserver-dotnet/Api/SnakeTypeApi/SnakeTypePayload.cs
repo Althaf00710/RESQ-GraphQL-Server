@@ -1,0 +1,6 @@
+﻿namespace RESQserver_dotnet.Api.SnakeType
+{
+    public class SnakeTypePayload
+    {
+    }
+}

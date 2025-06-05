@@ -1,0 +1,9 @@
+﻿using Core.models;
+using Core.Repositories.Generic;
+
+namespace Core.Repositories.Interfaces
+{
+    public interface IRescueVehicleRequestRepository : IRepository<RescueVehicleRequest>
+    {
+    }
+}
