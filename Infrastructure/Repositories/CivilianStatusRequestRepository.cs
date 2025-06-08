@@ -5,11 +5,11 @@ using Infrastructure.Repositories.Generic;
 
 namespace Infrastructure.Repositories
 {
-    public class CivilianTypeRequestRepository : Repository<CivilianTypeRequest>, ICivilianTypeRequestRepository
+    public class CivilianStatusRequestRepository : Repository<CivilianStatusRequest>, ICivilianStatusRequestRepository
     {
         private readonly AppDbContext _context;
 
-        public CivilianTypeRequestRepository(AppDbContext context) : base(context)
+        public CivilianStatusRequestRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }

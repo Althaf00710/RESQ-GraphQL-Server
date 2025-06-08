@@ -20,15 +20,15 @@ namespace Core.Models
         public string Name { get; set; }
         [Required]
         public string NicNumber { get; set; }
-        public int TypeId { get; set; } // "Traffic Police", "Doctor"
+        public int CivilianStatusId { get; set; } // "Traffic Police", "Doctor"
         public DateTime JoinedDate { get; set; }
 
 
 
-        [ForeignKey(nameof(TypeId))]
-        public CivilianType CivilianType { get; set; }
+        [ForeignKey(nameof(CivilianStatusId))]
+        public CivilianStatus CivilianStatus { get; set; }
         public ICollection<CivilianLocation> CivilianLocations { get; set; }
         public ICollection<RescueVehicleRequest> RescueVehicleRequests { get; set; }
-        public ICollection<CivilianTypeRequest> CivilianTypeRequests { get; set; }
+        public ICollection<CivilianStatusRequest> CivilianTypeRequests { get; set; }
     }
 }

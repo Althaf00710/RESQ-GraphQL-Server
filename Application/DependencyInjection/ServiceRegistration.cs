@@ -18,8 +18,8 @@ namespace Application.DependencyInjection
         {
             services.AddScoped<ICivilianService, CivilianService>();
             services.AddScoped<ICivilianLocationService, CivilianLocationService>();
-            services.AddScoped<ICivilianTypeService, CivilianTypeService>();
-            services.AddScoped<ICivilianTypeRequestService, CivilianTypeRequestService>();
+            services.AddScoped<ICivilianStatusService, CivilianStatusService>();
+            services.AddScoped<ICivilianStatusRequestService, CivilianStatusRequestService>();
             services.AddScoped<IFirstAidCategoryService, FirstAidCategoryService>();
             services.AddScoped<IFirstAidDetailService, FirstAidDetailService>();
             services.AddScoped<IFirstAidService, FirstAidService>();

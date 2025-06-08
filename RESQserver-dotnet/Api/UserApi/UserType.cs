@@ -14,7 +14,6 @@ namespace RESQserver_dotnet.Api.UserApi
             descriptor.Field(u => u.Username).Type<NonNullType<StringType>>();
             descriptor.Field(u => u.ProfilePicturePath).Type<StringType>();
 
-            // Hide the password field from the GraphQL schema
             descriptor.Field(u => u.Password).Ignore();
         }
     }

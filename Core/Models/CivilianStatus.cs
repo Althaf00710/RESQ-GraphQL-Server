@@ -3,14 +3,14 @@ using Core.models;
 
 namespace Core.Models
 {
-    public class CivilianType
+    public class CivilianStatus
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string Role { get; set; }
 
-        public ICollection<CivilianTypeRequest> CivilianTypeRequests { get; set; }
+        public ICollection<CivilianStatusRequest> CivilianTypeRequests { get; set; }
         public ICollection<Civilian> Civilians { get; set; }
 
     }

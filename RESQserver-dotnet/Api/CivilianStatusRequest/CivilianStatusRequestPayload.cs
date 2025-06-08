@@ -1,6 +1,6 @@
 ﻿namespace RESQserver_dotnet.Api.CivilianTypeRequest
 {
-    public class CivilianTypeRequestMutation
+    public class CivilianStatusRequestPayload
     {
     }
 }

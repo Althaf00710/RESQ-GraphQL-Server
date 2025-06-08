@@ -5,10 +5,10 @@ using Core.Services.Interfaces;
 
 namespace Application.Services
 {
-    public class CivilianTypeRequestService : Service<CivilianTypeRequest>, ICivilianTypeRequestService
+    public class CivilianStatusRequestService : Service<CivilianStatusRequest>, ICivilianStatusRequestService
     {
-        private readonly ICivilianTypeRequestRepository _repository;
-        public CivilianTypeRequestService(ICivilianTypeRequestRepository repository)
+        private readonly ICivilianStatusRequestRepository _repository;
+        public CivilianStatusRequestService(ICivilianStatusRequestRepository repository)
             : base(repository)
         {
             _repository = repository;

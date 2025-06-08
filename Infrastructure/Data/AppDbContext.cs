@@ -20,13 +20,13 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<CivilianTypeRequest>()
+            modelBuilder.Entity<CivilianStatusRequest>()
                 .HasOne(r => r.Civilian)
                 .WithMany(c => c.CivilianTypeRequests)
                 .HasForeignKey(r => r.CivilianId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CivilianTypeRequest>()
+            modelBuilder.Entity<CivilianStatusRequest>()
                 .HasOne(r => r.CivilianType)
                 .WithMany(t => t.CivilianTypeRequests)
                 .HasForeignKey(r => r.CivilianTypeId)
@@ -36,8 +36,8 @@ namespace Infrastructure.Data
 
         public DbSet<Civilian> Civilians { get; set; }
         public DbSet<CivilianLocation> CivilianLocations { get; set; }
-        public DbSet<CivilianType> CivilianTypes { get; set; }
-        public DbSet<CivilianTypeRequest> CivilianTypeRequests { get; set; }
+        public DbSet<CivilianStatus> CivilianTypes { get; set; }
+        public DbSet<CivilianStatusRequest> CivilianTypeRequests { get; set; }
 
         public DbSet<FirstAidCategory> FirstAidCategories { get; set; }
         public DbSet<FirstAidDetail> FirstAidDetails { get; set; }

@@ -20,6 +20,5 @@ namespace Core.DTO
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? NicNumber { get; set; }
-        public string? Type { get; set; } // "Traffic Police", "Doctor"
     }
 }

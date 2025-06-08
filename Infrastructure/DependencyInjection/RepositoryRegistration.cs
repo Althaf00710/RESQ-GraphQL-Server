@@ -15,8 +15,8 @@ namespace Infrastructure.DependencyInjection
         {
             services.AddScoped<ICivilianRepository, CivilianRepository>();
             services.AddScoped<ICivilianLocationRepository, CivilianLocationRepository>();
-            services.AddScoped<ICivilianTypeRepository, CivilianTypeRepository>();
-            services.AddScoped<ICivilianTypeRequestRepository, CivilianTypeRequestRepository>();
+            services.AddScoped<ICivilianStatusRepository, CivilianStatusRepository>();
+            services.AddScoped<ICivilianStatusRequestRepository, CivilianStatusRequestRepository>();
             services.AddScoped<IFirstAidCategoryRepository, FirstAidCategoryRepository>();
             services.AddScoped<IFirstAidDetailRepository, FirstAidDetailRepository>();
             services.AddScoped<IFirstAidRepository, FirstAidRepository>();
