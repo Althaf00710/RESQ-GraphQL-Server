@@ -1,4 +1,5 @@
-﻿using Application.Services.Generic;
+﻿using System.Reflection.Metadata.Ecma335;
+using Application.Services.Generic;
 using Application.Utils;
 using AutoMapper;
 using Core.DTO;
@@ -15,11 +16,14 @@ namespace Application.Services
         private readonly IUserRepository _repository;
         private readonly ILogger<UserService> _logger;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository repository, ILogger<UserService> logger, IMapper mapper) : base(repository)
+        private readonly JwtTokenGenerator _jwt;
+
+        public UserService(IUserRepository repository, ILogger<UserService> logger, IMapper mapper, JwtTokenGenerator jwt) : base(repository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _jwt = jwt;
         }
 
         public async Task<User> Add(UserCreateInput dto, IFile? profilePicture)
@@ -46,6 +50,7 @@ namespace Application.Services
             try
             {
                 user.Password = PasswordHash.HashPassword(user.Password);
+                user.LastActive = "Offline";
                 await _repository.AddAsync(user);
                 await _repository.SaveAsync();
 
@@ -129,6 +134,36 @@ namespace Application.Services
 
             return user;
         }
+
+        public async Task<String> Login(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                throw new Exception("Username and password must not be empty.");
+            }
+
+            var user = await _repository.GetByUsernameAsync(username);
+
+            if (user is null)
+            {
+                _logger.LogWarning("Login failed: User with username '{Username}' not found", username);
+                throw new Exception("Invalid username or password.");
+            }
+
+            var isPasswordValid = PasswordHash.VerifyPassword(password, user.Password);
+
+            if (!isPasswordValid)
+            {
+                _logger.LogWarning("Login failed: Invalid password for username '{Username}'", username);
+                throw new Exception("Invalid username or password.");
+            }
+            user.LastActive = "Online";
+            await _repository.SaveAsync();
+            _logger.LogInformation("User '{Username}' tokken generated successfully", username);
+
+            return _jwt.GenerateToken(user.Id.ToString(), user.Username, "User");
+        }
+
 
 
     }

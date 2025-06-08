@@ -11,7 +11,7 @@ namespace Core.models
         [Required, EmailAddress]
         public string Email { get; set; }
         public DateTime JoinedDate { get; set; } = DateTime.Now;
-        public DateTime? LastActive { get; set; }
+        public string? LastActive { get; set; } = "Offline";
         [Required]
         public string Username { get; set; }
         [Required]

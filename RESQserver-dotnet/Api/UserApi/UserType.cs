@@ -10,7 +10,7 @@ namespace RESQserver_dotnet.Api.UserApi
             descriptor.Field(u => u.Name).Type<NonNullType<StringType>>();
             descriptor.Field(u => u.Email).Type<NonNullType<StringType>>();
             descriptor.Field(u => u.JoinedDate).Type<NonNullType<DateTimeType>>();
-            descriptor.Field(u => u.LastActive).Type<NonNullType<DateTimeType>>();
+            descriptor.Field(u => u.LastActive).Type<NonNullType<StringType>>();
             descriptor.Field(u => u.Username).Type<NonNullType<StringType>>();
             descriptor.Field(u => u.ProfilePicturePath).Type<StringType>();
 

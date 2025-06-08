@@ -1,9 +1,15 @@
-﻿using Core.Models;
+﻿using Core.DTO;
+using Core.models;
+using Core.Models;
 using Core.Services.Generic;
 
 namespace Core.Services.Interfaces
 {
     public interface ICivilianService : IService<Civilian>
     {
+        Task<Civilian> Add(CivilianCreateInput dto);
+        Task<Civilian> Update(int id, CivilianCreateInput dto);
+        Task<string> Login(string phoneNumber, int otp);
+        Task<string> SendOTP(string phoneNumber);
     }
 }

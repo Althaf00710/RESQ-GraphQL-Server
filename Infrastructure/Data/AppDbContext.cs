@@ -16,6 +16,24 @@ namespace Infrastructure.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CivilianTypeRequest>()
+                .HasOne(r => r.Civilian)
+                .WithMany(c => c.CivilianTypeRequests)
+                .HasForeignKey(r => r.CivilianId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CivilianTypeRequest>()
+                .HasOne(r => r.CivilianType)
+                .WithMany(t => t.CivilianTypeRequests)
+                .HasForeignKey(r => r.CivilianTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+
         public DbSet<Civilian> Civilians { get; set; }
         public DbSet<CivilianLocation> CivilianLocations { get; set; }
         public DbSet<CivilianType> CivilianTypes { get; set; }

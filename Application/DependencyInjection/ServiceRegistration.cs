@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Services;
+using Application.Utils;
 using Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +30,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IRescueVehicleTypeService, RescueVehicleTypeService>();
             services.AddScoped<IUserService, UserService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddScoped<JwtTokenGenerator>();
 
             return services;
         }

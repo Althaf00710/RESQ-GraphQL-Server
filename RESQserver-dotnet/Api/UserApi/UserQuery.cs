@@ -1,5 +1,6 @@
 ﻿using Core.models;
 using Core.Services.Interfaces;
+using HotChocolate.Authorization;
 
 namespace RESQserver_dotnet.Api.UserApi
 {

@@ -44,5 +44,22 @@ namespace RESQserver_dotnet.Api.UserApi
                 return new UserPayload(false, ex.Message);
             }
         }
+
+        public async Task<UserPayload> LoginUser(string username, string password, [Service] IUserService userService)
+        {
+            try
+            {
+                var token = await userService.Login(username, password);
+
+                if (token == null) return new UserPayload(false, "Invalid Username or Password");
+                
+                return new UserPayload(true, token);
+            }
+            catch (Exception ex)
+            {
+                return new UserPayload(false, ex.Message);
+            }
+        }
+
     }
 }

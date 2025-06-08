@@ -11,5 +11,7 @@ namespace Core.Models
         public string Name { get; set; }
 
         public ICollection<CivilianTypeRequest> CivilianTypeRequests { get; set; }
+        public ICollection<Civilian> Civilians { get; set; }
+
     }
 }

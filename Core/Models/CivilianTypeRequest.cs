@@ -12,7 +12,7 @@ namespace Core.Models
         public int CivilianId { get; set; }
         [Required]
         public string proofImage { get; set; }
-
+        public string status { get; set; } // "Pending", "Approved", "Rejected"
 
 
         [ForeignKey(nameof(CivilianTypeId))]

@@ -1,4 +1,6 @@
-﻿namespace Core.DTO
+﻿using Core.models;
+
+namespace Core.DTO
 {
     public class UserCreateInput
     {
@@ -16,5 +18,6 @@
         public string? Password { get; set; } 
     }
 
+    
 
 }
