@@ -1,4 +1,4 @@
-﻿namespace RESQserver_dotnet.Api.CivilianTypeRequest
+﻿namespace RESQserver_dotnet.Api.CivilianStatusRequestApi
 {
     public class CivilianStatusRequestQuery
     {

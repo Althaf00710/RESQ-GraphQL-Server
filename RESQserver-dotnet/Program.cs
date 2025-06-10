@@ -5,7 +5,12 @@ using Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RESQserver_dotnet.Api;
+using RESQserver_dotnet.Api.CivilianApi;
+using RESQserver_dotnet.Api.CivilianStatusApi;
+using RESQserver_dotnet.Api.CivilianType;
 using RESQserver_dotnet.Api.UserApi;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,10 +50,16 @@ builder.Services.AddInfrastructure();
 
 builder.Services
     .AddGraphQLServer()
-   // .AddAuthorizationCore()
-    .AddQueryType<UserQuery>()
+    .AddQueryType<RESQserver_dotnet.Api.Query>()
+    .AddTypeExtension<UserQuery>()
+    .AddTypeExtension<CivilianStatusQuery>()
+    .AddTypeExtension<CivilianQuery>()
+    .AddMutationType<Mutation>()
+    .AddTypeExtension<UserMutation>()
+    .AddTypeExtension<CivilianStatusMutation>()
+    .AddTypeExtension<CivilianMutation>()
     .AddType<UserType>()
-    .AddMutationType<UserMutation>()
+    .AddType<CivilianStatusType>()
     .AddType<UploadType>();
 
 var app = builder.Build();

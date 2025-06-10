@@ -5,5 +5,6 @@ namespace Core.Repositories.Interfaces
 {
     public interface ICivilianStatusRepository : IRepository<CivilianStatus>
     {
+        Task<bool> RoleExistsAsync (string role, int? excludeId = null);
     }
 }

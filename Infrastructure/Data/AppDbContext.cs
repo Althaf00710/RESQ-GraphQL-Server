@@ -29,14 +29,14 @@ namespace Infrastructure.Data
             modelBuilder.Entity<CivilianStatusRequest>()
                 .HasOne(r => r.CivilianType)
                 .WithMany(t => t.CivilianTypeRequests)
-                .HasForeignKey(r => r.CivilianTypeId)
+                .HasForeignKey(r => r.CivilianStatusId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
 
         public DbSet<Civilian> Civilians { get; set; }
         public DbSet<CivilianLocation> CivilianLocations { get; set; }
-        public DbSet<CivilianStatus> CivilianTypes { get; set; }
+        public DbSet<CivilianStatus> CivilianStatuses { get; set; }
         public DbSet<CivilianStatusRequest> CivilianTypeRequests { get; set; }
 
         public DbSet<FirstAidCategory> FirstAidCategories { get; set; }

@@ -1,24 +1,37 @@
 ﻿using Core.Models;
+using HotChocolate.Types;
+using Infrastructure.Data;
+using HotChocolate.Resolvers;
 
-namespace RESQserver_dotnet.Api.CivilianType
+public class CivilianStatusType : ObjectType<CivilianStatus>
 {
-    public class CivilianStatusType : ObjectType<CivilianStatus>
+    protected override void Configure(IObjectTypeDescriptor<CivilianStatus> descriptor)
     {
-        protected override void Configure(IObjectTypeDescriptor<CivilianStatus> descriptor)
-        {
-            descriptor.Description("Represents a role of a civilian, such as Doctor or Traffic Police.");
+        descriptor.Description("Represents a civilian status (like role or user type).");
 
-            descriptor
-                .Field(ct => ct.Id)
-                .Type<NonNullType<IdType>>();
+        descriptor
+            .Field(c => c.Id)
+            .Description("The unique identifier of the civilian status.");
 
-            descriptor
-                .Field(ct => ct.Role)
-                .Type<NonNullType<StringType>>();
+        descriptor
+            .Field(c => c.Role)
+            .Description("The role of the civilian.");
 
-            descriptor
-                .Field(ct => ct.Civilians)
-                .Ignore(); // To avoid circular 
-        }
+        descriptor
+            .Field(c => c.CivilianTypeRequests)
+            .Ignore();
+
+        descriptor
+            .Field(c => c.Civilians)
+            .Ignore();
+
+        
+        /*
+        descriptor
+            .Field("civilians")
+            .ResolveWith<Resolvers>(r => r.GetCivilians(default!, default!))
+            .UseDbContext<AppDbContext>()
+            .Type<ListType<CivilianType>>();
+        */
     }
 }

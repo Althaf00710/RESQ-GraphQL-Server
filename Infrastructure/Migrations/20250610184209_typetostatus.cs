@@ -6,22 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FixedCascadeConflict : Migration
+    public partial class typetostatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CivilianTypes",
+                name: "CivilianStatuses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CivilianTypes", x => x.Id);
+                    table.PrimaryKey("PK_CivilianStatuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,16 +96,16 @@ namespace Infrastructure.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NicNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
+                    CivilianStatusId = table.Column<int>(type: "int", nullable: false),
                     JoinedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Civilians", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Civilians_CivilianTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "CivilianTypes",
+                        name: "FK_Civilians_CivilianStatuses_CivilianStatusId",
+                        column: x => x.CivilianStatusId,
+                        principalTable: "CivilianStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -183,7 +183,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CivilianTypeId = table.Column<int>(type: "int", nullable: false),
+                    CivilianStatusId = table.Column<int>(type: "int", nullable: false),
                     CivilianId = table.Column<int>(type: "int", nullable: false),
                     proofImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     status = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -192,9 +192,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_CivilianTypeRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CivilianTypeRequests_CivilianTypes_CivilianTypeId",
-                        column: x => x.CivilianTypeId,
-                        principalTable: "CivilianTypes",
+                        name: "FK_CivilianTypeRequests_CivilianStatuses_CivilianStatusId",
+                        column: x => x.CivilianStatusId,
+                        principalTable: "CivilianStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -309,9 +309,9 @@ namespace Infrastructure.Migrations
                 column: "CivilianId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Civilians_TypeId",
+                name: "IX_Civilians_CivilianStatusId",
                 table: "Civilians",
-                column: "TypeId");
+                column: "CivilianStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CivilianTypeRequests_CivilianId",
@@ -319,9 +319,9 @@ namespace Infrastructure.Migrations
                 column: "CivilianId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CivilianTypeRequests_CivilianTypeId",
+                name: "IX_CivilianTypeRequests_CivilianStatusId",
                 table: "CivilianTypeRequests",
-                column: "CivilianTypeId");
+                column: "CivilianStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FirstAidDetails_FirstAidId",
@@ -402,7 +402,7 @@ namespace Infrastructure.Migrations
                 name: "RescueVehicleTypes");
 
             migrationBuilder.DropTable(
-                name: "CivilianTypes");
+                name: "CivilianStatuses");
         }
     }
 }

@@ -4,6 +4,7 @@ using HotChocolate.Authorization;
 
 namespace RESQserver_dotnet.Api.UserApi
 {
+    [ExtendObjectType<Query>]
     public class UserQuery
     {
         public async Task<IEnumerable<User>> GetUsers([Service] IUserService userService)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250608171548_FixedCascadeConflict")]
-    partial class FixedCascadeConflict
+    [Migration("20250610184209_typetostatus")]
+    partial class typetostatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CivilianStatusId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -52,12 +55,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("CivilianStatusId");
 
                     b.ToTable("Civilians");
                 });
@@ -93,7 +93,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("CivilianLocations");
                 });
 
-            modelBuilder.Entity("Core.Models.CivilianType", b =>
+            modelBuilder.Entity("Core.Models.CivilianStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,16 +101,16 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CivilianTypes");
+                    b.ToTable("CivilianStatuses");
                 });
 
-            modelBuilder.Entity("Core.Models.CivilianTypeRequest", b =>
+            modelBuilder.Entity("Core.Models.CivilianStatusRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +121,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("CivilianId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CivilianTypeId")
+                    b.Property<int>("CivilianStatusId")
                         .HasColumnType("int");
 
                     b.Property<string>("proofImage")
@@ -136,7 +136,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CivilianId");
 
-                    b.HasIndex("CivilianTypeId");
+                    b.HasIndex("CivilianStatusId");
 
                     b.ToTable("CivilianTypeRequests");
                 });
@@ -437,13 +437,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Models.Civilian", b =>
                 {
-                    b.HasOne("Core.Models.CivilianType", "CivilianType")
+                    b.HasOne("Core.Models.CivilianStatus", "CivilianStatus")
                         .WithMany("Civilians")
-                        .HasForeignKey("TypeId")
+                        .HasForeignKey("CivilianStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CivilianType");
+                    b.Navigation("CivilianStatus");
                 });
 
             modelBuilder.Entity("Core.Models.CivilianLocation", b =>
@@ -457,7 +457,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("Civilian");
                 });
 
-            modelBuilder.Entity("Core.Models.CivilianTypeRequest", b =>
+            modelBuilder.Entity("Core.Models.CivilianStatusRequest", b =>
                 {
                     b.HasOne("Core.Models.Civilian", "Civilian")
                         .WithMany("CivilianTypeRequests")
@@ -465,9 +465,9 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Core.Models.CivilianType", "CivilianType")
+                    b.HasOne("Core.Models.CivilianStatus", "CivilianType")
                         .WithMany("CivilianTypeRequests")
-                        .HasForeignKey("CivilianTypeId")
+                        .HasForeignKey("CivilianStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -559,7 +559,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicleRequests");
                 });
 
-            modelBuilder.Entity("Core.Models.CivilianType", b =>
+            modelBuilder.Entity("Core.Models.CivilianStatus", b =>
                 {
                     b.Navigation("CivilianTypeRequests");
 

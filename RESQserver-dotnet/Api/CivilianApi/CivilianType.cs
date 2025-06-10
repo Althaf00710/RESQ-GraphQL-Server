@@ -1,9 +1,10 @@
 ﻿using Core.Models;
 using HotChocolate.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Data;
 using RESQserver_dotnet.Api.CivilianType;
 
-namespace RESQserver_dotnet.Api.Civilian
+namespace RESQserver_dotnet.Api.CivilianApi
 {
     public class CivilianType : ObjectType<Core.Models.Civilian>
     {
@@ -41,13 +42,11 @@ namespace RESQserver_dotnet.Api.Civilian
 
             descriptor
                 .Field(c => c.CivilianStatus)
-                .Type<CivilianStatusType>() // Reference to nested type  
-                .ResolveWith<Resolvers>(r => r.GetCivilianType(default!, default!))
-                .UseDbContext<AppDbContext>(); 
+                .Type<CivilianStatusType>();  //Reference to CivilianStatusType
 
             descriptor
                 .Field(c => c.CivilianLocations)
-                .Ignore(); // Optional  
+                .Ignore(); 
 
             descriptor
                 .Field(c => c.RescueVehicleRequests)
@@ -56,14 +55,6 @@ namespace RESQserver_dotnet.Api.Civilian
             descriptor
                 .Field(c => c.CivilianTypeRequests)
                 .Ignore();
-        }
-
-        private class Resolvers
-        {
-            public Core.Models.CivilianStatus GetCivilianType(Core.Models.Civilian civilian, [ScopedService] AppDbContext context)
-            {
-                return context.CivilianTypes.FirstOrDefault(ct => ct.Id == civilian.CivilianStatusId)!;
-            }
         }
     }
 }

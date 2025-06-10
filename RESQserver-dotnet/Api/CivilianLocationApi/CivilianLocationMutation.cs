@@ -1,4 +1,4 @@
-﻿namespace RESQserver_dotnet.Api.CivilianLocation
+﻿namespace RESQserver_dotnet.Api.CivilianLocationApi
 {
     public class CivilianLocationMutation
     {

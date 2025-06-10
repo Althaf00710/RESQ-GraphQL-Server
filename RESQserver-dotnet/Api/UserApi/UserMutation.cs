@@ -4,6 +4,7 @@ using Core.Services.Interfaces;
 
 namespace RESQserver_dotnet.Api.UserApi
 {
+    [ExtendObjectType<Mutation>]
     public class UserMutation
     {
         public async Task<UserPayload> CreateUser(UserCreateInput input, IFile? profilePicture, [Service] IUserService userService)
