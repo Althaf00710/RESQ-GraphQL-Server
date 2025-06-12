@@ -21,5 +21,9 @@ namespace Infrastructure.Repositories
                 cs.Role.ToLower() == role.ToLower() &&
                 (!excludeId.HasValue || cs.Id != excludeId));
         }
+
     }
 }
+
+    
+    

@@ -1,4 +1,5 @@
 ﻿using Core.Models;
+using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
 
 namespace RESQserver_dotnet.Api.CivilianStatusApi
@@ -15,5 +16,6 @@ namespace RESQserver_dotnet.Api.CivilianStatusApi
         {
             return await service.GetByIdAsync(id);
         }
+
     }
 }

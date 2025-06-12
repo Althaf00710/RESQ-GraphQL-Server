@@ -13,10 +13,12 @@ namespace Core.Models
         [Required]
         public string proofImage { get; set; }
         public string status { get; set; } // "Pending", "Approved", "Rejected"
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
 
         [ForeignKey(nameof(CivilianStatusId))]
-        public CivilianStatus CivilianType { get; set; }
+        public CivilianStatus CivilianStatus { get; set; }
 
         [ForeignKey(nameof(CivilianId))]
         public Civilian Civilian { get; set; }

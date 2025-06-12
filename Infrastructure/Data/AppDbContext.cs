@@ -27,7 +27,7 @@ namespace Infrastructure.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CivilianStatusRequest>()
-                .HasOne(r => r.CivilianType)
+                .HasOne(r => r.CivilianStatus)
                 .WithMany(t => t.CivilianTypeRequests)
                 .HasForeignKey(r => r.CivilianStatusId)
                 .OnDelete(DeleteBehavior.Cascade);

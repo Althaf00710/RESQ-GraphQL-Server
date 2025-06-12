@@ -11,5 +11,6 @@ namespace Core.Services.Interfaces
         Task<Civilian> Update(int id, CivilianUpdateInput dto);
         Task<string> Login(string phoneNumber, int otp);
         Task<string> SendOTP(string phoneNumber);
+        Task<bool> updateCivilianStatus(int id, int civilianStatusId);
     }
 }

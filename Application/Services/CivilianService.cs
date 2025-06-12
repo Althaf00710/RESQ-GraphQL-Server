@@ -132,6 +132,20 @@ namespace Application.Services
             return civilian;
         }
 
-        
+        public async Task<bool> updateCivilianStatus(int id, int civilianStatusId)
+        {
+            var civilian = await _repository.GetByIdAsync(id);
+            if (civilian == null)
+            {
+                _logger.LogWarning("Civilian with ID {Id} not found", id);
+                return false;
+            }
+
+            civilian.CivilianStatusId = civilianStatusId;
+            _repository.SaveAsync();
+            return true;
+        }
+
+       
     }
 }

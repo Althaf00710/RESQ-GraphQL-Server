@@ -121,6 +121,12 @@ namespace Infrastructure.Migrations
                     b.Property<int>("CivilianStatusId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("proofImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -462,7 +468,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Core.Models.CivilianStatus", "CivilianType")
+                    b.HasOne("Core.Models.CivilianStatus", "CivilianStatus")
                         .WithMany("CivilianTypeRequests")
                         .HasForeignKey("CivilianStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -470,7 +476,7 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Civilian");
 
-                    b.Navigation("CivilianType");
+                    b.Navigation("CivilianStatus");
                 });
 
             modelBuilder.Entity("Core.Models.FirstAid", b =>
