@@ -3,7 +3,7 @@ using Core.models;
 
 namespace Core.Models
 {
-    public class RescueVehicleType
+    public class RescueVehicleCategory
     {
         [Key]
         public int Id { get; set; }

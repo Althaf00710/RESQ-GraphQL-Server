@@ -16,11 +16,11 @@ namespace Core.models
         public string Password { get; set; }
         public string Status { get; set; }
         [Required]
-        public int RescueVehicleTypeId { get; set; }
+        public int RescueVehicleCategoryId { get; set; }
 
 
-        [ForeignKey(nameof(RescueVehicleTypeId))]
-        public RescueVehicleType RescueVehicleType { get; set; }
+        [ForeignKey(nameof(RescueVehicleCategoryId))]
+        public RescueVehicleCategory RescueVehicleCategory { get; set; }
         public ICollection<RescueVehicleLocation> RescueVehicleLocations { get; set; }
         public ICollection<RescueVehicleAssignment> RescueVehicleAssignment { get; set; }
     }

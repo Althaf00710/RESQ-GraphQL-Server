@@ -29,6 +29,6 @@ namespace Core.Models
         public CivilianStatus CivilianStatus { get; set; }
         public ICollection<CivilianLocation> CivilianLocations { get; set; }
         public ICollection<RescueVehicleRequest> RescueVehicleRequests { get; set; }
-        public ICollection<CivilianStatusRequest> CivilianTypeRequests { get; set; }
+        public ICollection<CivilianStatusRequest> CivilianStatusRequests { get; set; }
     }
 }

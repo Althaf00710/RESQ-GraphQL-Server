@@ -27,7 +27,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IRescueVehicleLocationService, RescueVehicleLocationService>();
             services.AddScoped<IRescueVehicleService, RescueVehicleService>();
             services.AddScoped<IRescueVehicleRequestService, RescueVehicleRequestService>();
-            services.AddScoped<IRescueVehicleTypeService, RescueVehicleTypeService>();
+            services.AddScoped<IRescueVehicleCategoryService, RescueVehicleCategoryService>();
             services.AddScoped<IUserService, UserService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<JwtTokenGenerator>();

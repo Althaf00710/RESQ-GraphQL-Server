@@ -10,6 +10,8 @@ using RESQserver_dotnet.Api.CivilianApi;
 using RESQserver_dotnet.Api.CivilianStatusApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;
 using RESQserver_dotnet.Api.CivilianType;
+using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
+using RESQserver_dotnet.Api.RescueVehicleTypeApi;
 using RESQserver_dotnet.Api.UserApi;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -59,15 +61,18 @@ builder.Services
     .AddTypeExtension<CivilianStatusQuery>()
     .AddTypeExtension<CivilianQuery>()
     .AddTypeExtension<CivilianStatusRequestQuery>()
+    .AddTypeExtension<RescueVehicleCategoryQuery>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<UserMutation>()
     .AddTypeExtension<CivilianStatusMutation>()
     .AddTypeExtension<CivilianMutation>()
     .AddTypeExtension<CivilianStatusRequestMutation>()
+    .AddTypeExtension<RescueVehicleCategoryMutation>()
     .AddType<UserType>()
     .AddType<CivilianStatusType>()
     .AddType<CivilianType>()
     .AddType<CivilianStatusRequestType>()
+    .AddType<RescueVehicleCategoryType>()
     .AddType<UploadType>();
 
 var app = builder.Build();

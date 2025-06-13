@@ -3,6 +3,10 @@ using HotChocolate.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Data;
 using RESQserver_dotnet.Api.CivilianType;
+using Microsoft.EntityFrameworkCore;
+using RESQserver_dotnet.Api.CivilianLocationApi;
+using RESQserver_dotnet.Api.CivilianStatusRequestApi;
+using RESQserver_dotnet.Api.RescueVehicleRequest;
 
 namespace RESQserver_dotnet.Api.CivilianApi
 {
@@ -40,21 +44,44 @@ namespace RESQserver_dotnet.Api.CivilianApi
                 .Field(c => c.CivilianStatusId)
                 .Type<NonNullType<IntType>>();
 
-            descriptor
-                .Field(c => c.CivilianStatus)
-                .Type<CivilianStatusType>();  //Reference to CivilianStatusType
+            descriptor.Field("civilianStatus")
+                .Type<CivilianStatusType>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.CivilianStatuses
+                        .FirstOrDefaultAsync(s => s.Id == ctx.Parent<Civilian>().CivilianStatusId);
+                });
 
-            descriptor
-                .Field(c => c.CivilianLocations)
-                .Ignore(); 
+            //descriptor.Field("civilianLocations")
+            //    .Type<ListType<CivilianLocationType>>()
+            //    .Resolve(async ctx =>
+            //    {
+            //        var db = ctx.Service<AppDbContext>();
+            //        return await db.CivilianLocations
+            //            .Where(l => l.CivilianId == ctx.Parent<Civilian>().Id)
+            //            .ToListAsync();
+            //    });
 
-            descriptor
-                .Field(c => c.RescueVehicleRequests)
-                .Ignore();
+            //descriptor.Field("rescueVehicleRequests")
+            //    .Type<ListType<RescueVehicleRequestType>>()
+            //    .Resolve(async ctx =>
+            //    {
+            //        var db = ctx.Service<AppDbContext>();
+            //        return await db.RescueVehicleRequests
+            //            .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
+            //            .ToListAsync();
+            //    });
 
-            descriptor
-                .Field(c => c.CivilianTypeRequests)
-                .Ignore();
+            //descriptor.Field("civilianTypeRequests")
+            //    .Type<ListType<CivilianStatusRequestType>>()
+            //    .Resolve(async ctx =>
+            //    {
+            //        var db = ctx.Service<AppDbContext>();
+            //        return await db.CivilianStatusRequests
+            //            .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
+            //            .ToListAsync();
+            //    });
         }
     }
 }

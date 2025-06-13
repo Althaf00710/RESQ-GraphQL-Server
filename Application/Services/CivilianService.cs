@@ -51,7 +51,7 @@ namespace Application.Services
             try
             {
                 civilian.JoinedDate = DateTime.UtcNow;
-
+                civilian.CivilianStatusId = 1;
                 await _repository.AddAsync(civilian);
                 await _repository.SaveAsync();
 

@@ -1,7 +1,11 @@
 ﻿using Core.Models;
 using HotChocolate.Types;
 using Infrastructure.Data;
-using HotChocolate.Resolvers;
+using Microsoft.EntityFrameworkCore;
+using RESQserver_dotnet.Api.CivilianApi;
+using RESQserver_dotnet.Api.CivilianStatusRequestApi;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class CivilianStatusType : ObjectType<CivilianStatus>
 {
@@ -9,29 +13,58 @@ public class CivilianStatusType : ObjectType<CivilianStatus>
     {
         descriptor.Description("Represents a civilian status (like role or user type).");
 
-        descriptor
-            .Field(c => c.Id)
-            .Description("The unique identifier of the civilian status.");
+        // Configure scalar fields
+        descriptor.Field(c => c.Id)
+            .Description("The unique identifier of the civilian status.")
+            .Type<NonNullType<IdType>>();
 
-        descriptor
-            .Field(c => c.Role)
-            .Description("The role of the civilian.");
+        descriptor.Field(c => c.Role)
+            .Description("The role of the civilian.")
+            .Type<NonNullType<StringType>>();
 
-        descriptor
-            .Field(c => c.CivilianTypeRequests)
-            .Ignore();
+        // Configure navigation properties with resolvers
+        descriptor.Field(c => c.Civilians)
+            .Description("List of civilians with this status")
+            .Type<ListType<CivilianType>>()
+            .Resolve(async ctx =>
+            {
+                var db = ctx.Service<AppDbContext>();
+                return await db.Civilians
+                    .Where(c => c.CivilianStatusId == ctx.Parent<CivilianStatus>().Id)
+                    .ToListAsync();
+            });
 
-        descriptor
-            .Field(c => c.Civilians)
-            .Ignore();
+        descriptor.Field(c => c.CivilianTypeRequests)
+            .Description("Status change requests for this civilian type")
+            .Type<ListType<CivilianStatusRequestType>>()
+            .Resolve(async ctx =>
+            {
+                var db = ctx.Service<AppDbContext>();
+                return await db.CivilianStatusRequests
+                    .Where(r => r.CivilianStatusId == ctx.Parent<CivilianStatus>().Id)
+                    .ToListAsync();
+            });
+    }
 
-        
-        /*
-        descriptor
-            .Field("civilians")
-            .ResolveWith<Resolvers>(r => r.GetCivilians(default!, default!))
-            .UseDbContext<AppDbContext>()
-            .Type<ListType<CivilianType>>();
-        */
+    // Alternative resolver class approach (optional)
+    private class Resolvers
+    {
+        public async Task<List<Civilian>> GetCivilians(
+            [Parent] CivilianStatus status,
+            [Service] AppDbContext dbContext)
+        {
+            return await dbContext.Civilians
+                .Where(c => c.CivilianStatusId == status.Id)
+                .ToListAsync();
+        }
+
+        public async Task<List<CivilianStatusRequest>> GetCivilianTypeRequests(
+            [Parent] CivilianStatus status,
+            [Service] AppDbContext dbContext)
+        {
+            return await dbContext.CivilianStatusRequests
+                .Where(r => r.CivilianStatusId == status.Id)
+                .ToListAsync();
+        }
     }
 }

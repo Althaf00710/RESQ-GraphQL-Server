@@ -24,7 +24,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IRescueVehicleLocationRepository, RescueVehicleLocationRepository>();
             services.AddScoped<IRescueVehicleRepository, RescueVehicleRepository>();
             services.AddScoped<IRescueVehicleRequestRepository, RescueVehicleRequestRepository>();
-            services.AddScoped<IRescueVehicleTypeRepository, RescueVehicleTypeRepository>();
+            services.AddScoped<IRescueVehicleCategoryRepository, RescueVehicleCategoryRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
