@@ -1,19 +1,15 @@
-using System.Text;
 using Application.DependencyInjection;
 using Infrastructure.Data;
 using Infrastructure.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using RESQserver_dotnet.Api;
 using RESQserver_dotnet.Api.CivilianApi;
+using RESQserver_dotnet.Api.CivilianLocationApi;
 using RESQserver_dotnet.Api.CivilianStatusApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;
-using RESQserver_dotnet.Api.CivilianType;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleTypeApi;
 using RESQserver_dotnet.Api.UserApi;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,22 +52,28 @@ builder.Services.AddInfrastructure();
 
 builder.Services
     .AddGraphQLServer()
+
     .AddQueryType<RESQserver_dotnet.Api.Query>()
     .AddTypeExtension<UserQuery>()
     .AddTypeExtension<CivilianStatusQuery>()
     .AddTypeExtension<CivilianQuery>()
     .AddTypeExtension<CivilianStatusRequestQuery>()
+    .AddTypeExtension<CivilianLocationQuery>()
     .AddTypeExtension<RescueVehicleCategoryQuery>()
+
     .AddMutationType<Mutation>()
     .AddTypeExtension<UserMutation>()
     .AddTypeExtension<CivilianStatusMutation>()
     .AddTypeExtension<CivilianMutation>()
     .AddTypeExtension<CivilianStatusRequestMutation>()
+    .AddTypeExtension<CivilianLocationMutation>()
     .AddTypeExtension<RescueVehicleCategoryMutation>()
+
     .AddType<UserType>()
     .AddType<CivilianStatusType>()
     .AddType<CivilianType>()
     .AddType<CivilianStatusRequestType>()
+    .AddType<CivilianLocationType>()
     .AddType<RescueVehicleCategoryType>()
     .AddType<UploadType>();
 

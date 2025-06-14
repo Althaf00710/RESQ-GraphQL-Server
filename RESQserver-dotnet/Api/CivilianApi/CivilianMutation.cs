@@ -1,6 +1,5 @@
 ﻿using Core.DTO;
 using Core.Services.Interfaces;
-using RESQserver_dotnet.Api.CivilianType;
 
 namespace RESQserver_dotnet.Api.CivilianApi
 {

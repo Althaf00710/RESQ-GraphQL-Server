@@ -2,7 +2,7 @@
 using HotChocolate.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Data;
-using RESQserver_dotnet.Api.CivilianType;
+using RESQserver_dotnet.Api.CivilianStatusApi;
 using Microsoft.EntityFrameworkCore;
 using RESQserver_dotnet.Api.CivilianLocationApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;

@@ -1,7 +1,7 @@
 ﻿using Core.models;
 using Core.Models;
 
-namespace RESQserver_dotnet.Api.CivilianType
+namespace RESQserver_dotnet.Api.CivilianStatusApi
 {
     public class CivilianStatusPayload
     {

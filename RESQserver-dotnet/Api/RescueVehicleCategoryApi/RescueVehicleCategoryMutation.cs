@@ -1,6 +1,6 @@
 ﻿using Core.DTO;
 using Core.Services.Interfaces;
-using RESQserver_dotnet.Api.CivilianType;
+using RESQserver_dotnet.Api.CivilianStatusApi;
 
 namespace RESQserver_dotnet.Api.RescueVehicleCategoryApi
 {

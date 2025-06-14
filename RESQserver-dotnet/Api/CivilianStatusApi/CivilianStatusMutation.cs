@@ -1,7 +1,7 @@
 ﻿using Core.DTO;
 using Core.Models;
 using Core.Services.Interfaces;
-using RESQserver_dotnet.Api.CivilianType;
+using RESQserver_dotnet.Api.CivilianStatusApi;
 
 namespace RESQserver_dotnet.Api.CivilianStatusApi
 {
