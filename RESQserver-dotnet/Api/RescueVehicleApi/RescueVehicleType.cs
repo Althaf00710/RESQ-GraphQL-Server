@@ -5,8 +5,6 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using RESQserver_dotnet.Api.RescueVehicleAssignment;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
-using RESQserver_dotnet.Api.RescueVehicleLocation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RESQserver_dotnet.Api.RescueVehicleApi
@@ -17,13 +15,12 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
         {
             descriptor.Description("Represents a rescue vehicle in the emergency response system");
 
-            // Configure scalar fields
             descriptor.Field(r => r.Id)
                 .Description("The unique identifier of the rescue vehicle")
                 .Type<NonNullType<IdType>>();
 
             descriptor.Field(r => r.Code)
-                .Description("The unique code of the rescue vehicle")
+                .Description("The unique code of the rescue vehicle (e.g., A1000, F1001)")
                 .Type<NonNullType<StringType>>();
 
             descriptor.Field(r => r.PlateNumber)
@@ -46,8 +43,11 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
                 {
                     var db = ctx.Service<AppDbContext>();
                     return await db.RescueVehicleCategories
+                        .AsNoTracking()
                         .FirstOrDefaultAsync(c => c.Id == ctx.Parent<RescueVehicle>().RescueVehicleCategoryId);
                 });
+
+            descriptor.Field(r => r.Password).Ignore();
 
             //descriptor.Field(r => r.RescueVehicleLocations)
             //    .Description("Location history of this vehicle")
@@ -56,6 +56,7 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
             //    {
             //        var db = ctx.Service<AppDbContext>();
             //        return await db.RescueVehicleLocations
+            //            .AsNoTracking()
             //            .Where(l => l.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
             //            .OrderByDescending(l => l.Timestamp)
             //            .ToListAsync();
@@ -68,11 +69,11 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
             //    {
             //        var db = ctx.Service<AppDbContext>();
             //        return await db.RescueVehicleAssignments
+            //            .AsNoTracking()
             //            .Where(a => a.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
             //            .OrderByDescending(a => a.AssignmentTime)
             //            .ToListAsync();
             //    });
-
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.DTO;
+using Core.Models;
 
 namespace Application.Mapping
 {
@@ -11,10 +13,10 @@ namespace Application.Mapping
     {
         public CivilianLocationMappingProfile()
         {
-            CreateMap<Core.Models.CivilianLocation, Core.DTO.CivilianLocationInput>()
+            CreateMap<CivilianLocation, CivilianLocationInput>()
                 .ReverseMap();
         
-            CreateMap<Core.Models.CivilianLocation, Core.DTO.CivilianLocationStatusInput>()
+            CreateMap<CivilianLocation, CivilianLocationStatusInput>()
                 .ReverseMap();
         }
     }

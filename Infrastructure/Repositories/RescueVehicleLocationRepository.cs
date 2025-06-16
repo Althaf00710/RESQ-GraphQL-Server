@@ -2,6 +2,7 @@
 using Core.Repositories.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -13,5 +14,15 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<bool> CheckRescueVehicleId(int rescueVehicleId)
+        {
+            return await Task.FromResult(_context.RescueVehicleLocations.Any(rvl => rvl.RescueVehicleId == rescueVehicleId));
+        }
+
+        public async  Task<RescueVehicleLocation> GetByRescueVehicleId(int rescueVehicleId)
+        {
+            return await _context.RescueVehicleLocations
+                .FirstOrDefaultAsync(rvl => rvl.RescueVehicleId == rescueVehicleId);
+        }
     }
 }

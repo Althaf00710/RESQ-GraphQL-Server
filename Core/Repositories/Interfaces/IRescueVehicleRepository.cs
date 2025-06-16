@@ -5,5 +5,6 @@ namespace Core.Repositories.Interfaces
 {
     public interface IRescueVehicleRepository : IRepository<RescueVehicle>
     {
+        Task<string> GetMaxVehicleCodeAsync();
     }
 }

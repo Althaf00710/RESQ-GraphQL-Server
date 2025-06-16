@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.models;
+using Core.Models;
 
 namespace RESQserver_dotnet.Api.CivilianLocationApi
 {

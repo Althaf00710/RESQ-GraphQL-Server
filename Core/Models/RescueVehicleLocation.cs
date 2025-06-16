@@ -11,7 +11,8 @@ namespace Core.models
         public int RescueVehicleId { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        public string location { get; set; }
+        public string Location { get; set; }
+        public bool Active { get; set; }
 
         [ForeignKey("RescueVehicleId")]
         public RescueVehicle RescueVehicle { get; set; }

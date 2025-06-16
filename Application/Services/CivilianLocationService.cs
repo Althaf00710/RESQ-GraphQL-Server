@@ -21,7 +21,7 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<CivilianLocation> AddOrUpdate(CivilianLocationInput dto)
+        public async Task<CivilianLocation> Handle(CivilianLocationInput dto)
         {
             try
             {

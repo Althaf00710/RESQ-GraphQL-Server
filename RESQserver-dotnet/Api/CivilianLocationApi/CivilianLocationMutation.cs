@@ -6,13 +6,11 @@ namespace RESQserver_dotnet.Api.CivilianLocationApi
     [ExtendObjectType<Mutation>]
     public class CivilianLocationMutation
     {
-        public async Task<CivilianLocationPayload> AddOrUpdateCivilianLocation(
-            CivilianLocationInput input,
-            [Service] ICivilianLocationService service)
+        public async Task<CivilianLocationPayload> HandleCivilianLocation(CivilianLocationInput input, [Service] ICivilianLocationService service)
         {
             try
             {
-                var location = await service.AddOrUpdate(input);
+                var location = await service.Handle(input);
                 return new CivilianLocationPayload(true, "Location updated successfully", location);
             }
             catch (Exception ex)
