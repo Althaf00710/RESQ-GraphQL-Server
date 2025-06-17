@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class AddEmergency : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,11 +17,26 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CivilianStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmergencyCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmergencyCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,7 +53,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RescueVehicleTypes",
+                name: "RescueVehicleCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -47,7 +62,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RescueVehicleTypes", x => x.Id);
+                    table.PrimaryKey("PK_RescueVehicleCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,6 +126,32 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmergencyToCivilians",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CivilianStatusId = table.Column<int>(type: "int", nullable: false),
+                    EmergencyCategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmergencyToCivilians", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmergencyToCivilians_CivilianStatuses_CivilianStatusId",
+                        column: x => x.CivilianStatusId,
+                        principalTable: "CivilianStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmergencyToCivilians_EmergencyCategories_EmergencyCategoryId",
+                        column: x => x.EmergencyCategoryId,
+                        principalTable: "EmergencyCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FirstAids",
                 columns: table => new
                 {
@@ -132,6 +173,32 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmergencyToVehicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmergencyCategoryId = table.Column<int>(type: "int", nullable: false),
+                    VehicleCategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmergencyToVehicles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmergencyToVehicles_EmergencyCategories_EmergencyCategoryId",
+                        column: x => x.EmergencyCategoryId,
+                        principalTable: "EmergencyCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmergencyToVehicles_RescueVehicleCategories_VehicleCategoryId",
+                        column: x => x.VehicleCategoryId,
+                        principalTable: "RescueVehicleCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RescueVehicles",
                 columns: table => new
                 {
@@ -141,15 +208,15 @@ namespace Infrastructure.Migrations
                     PlateNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RescueVehicleTypeId = table.Column<int>(type: "int", nullable: false)
+                    RescueVehicleCategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RescueVehicles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RescueVehicles_RescueVehicleTypes_RescueVehicleTypeId",
-                        column: x => x.RescueVehicleTypeId,
-                        principalTable: "RescueVehicleTypes",
+                        name: "FK_RescueVehicles_RescueVehicleCategories_RescueVehicleCategoryId",
+                        column: x => x.RescueVehicleCategoryId,
+                        principalTable: "RescueVehicleCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -178,7 +245,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CivilianTypeRequests",
+                name: "CivilianStatusRequests",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -192,15 +259,15 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CivilianTypeRequests", x => x.Id);
+                    table.PrimaryKey("PK_CivilianStatusRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CivilianTypeRequests_CivilianStatuses_CivilianStatusId",
+                        name: "FK_CivilianStatusRequests_CivilianStatuses_CivilianStatusId",
                         column: x => x.CivilianStatusId,
                         principalTable: "CivilianStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CivilianTypeRequests_Civilians_CivilianId",
+                        name: "FK_CivilianStatusRequests_Civilians_CivilianId",
                         column: x => x.CivilianId,
                         principalTable: "Civilians",
                         principalColumn: "Id",
@@ -262,7 +329,8 @@ namespace Infrastructure.Migrations
                     RescueVehicleId = table.Column<int>(type: "int", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
                     Latitude = table.Column<double>(type: "float", nullable: false),
-                    location = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -316,14 +384,34 @@ namespace Infrastructure.Migrations
                 column: "CivilianStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CivilianTypeRequests_CivilianId",
-                table: "CivilianTypeRequests",
+                name: "IX_CivilianStatusRequests_CivilianId",
+                table: "CivilianStatusRequests",
                 column: "CivilianId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CivilianTypeRequests_CivilianStatusId",
-                table: "CivilianTypeRequests",
+                name: "IX_CivilianStatusRequests_CivilianStatusId",
+                table: "CivilianStatusRequests",
                 column: "CivilianStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyToCivilians_CivilianStatusId",
+                table: "EmergencyToCivilians",
+                column: "CivilianStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyToCivilians_EmergencyCategoryId",
+                table: "EmergencyToCivilians",
+                column: "EmergencyCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyToVehicles_EmergencyCategoryId",
+                table: "EmergencyToVehicles",
+                column: "EmergencyCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyToVehicles_VehicleCategoryId",
+                table: "EmergencyToVehicles",
+                column: "VehicleCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FirstAidDetails_FirstAidId",
@@ -356,9 +444,9 @@ namespace Infrastructure.Migrations
                 column: "CivilianId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RescueVehicles_RescueVehicleTypeId",
+                name: "IX_RescueVehicles_RescueVehicleCategoryId",
                 table: "RescueVehicles",
-                column: "RescueVehicleTypeId");
+                column: "RescueVehicleCategoryId");
         }
 
         /// <inheritdoc />
@@ -368,7 +456,13 @@ namespace Infrastructure.Migrations
                 name: "CivilianLocations");
 
             migrationBuilder.DropTable(
-                name: "CivilianTypeRequests");
+                name: "CivilianStatusRequests");
+
+            migrationBuilder.DropTable(
+                name: "EmergencyToCivilians");
+
+            migrationBuilder.DropTable(
+                name: "EmergencyToVehicles");
 
             migrationBuilder.DropTable(
                 name: "FirstAidDetails");
@@ -386,6 +480,9 @@ namespace Infrastructure.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
+                name: "EmergencyCategories");
+
+            migrationBuilder.DropTable(
                 name: "FirstAids");
 
             migrationBuilder.DropTable(
@@ -401,7 +498,7 @@ namespace Infrastructure.Migrations
                 name: "Civilians");
 
             migrationBuilder.DropTable(
-                name: "RescueVehicleTypes");
+                name: "RescueVehicleCategories");
 
             migrationBuilder.DropTable(
                 name: "CivilianStatuses");

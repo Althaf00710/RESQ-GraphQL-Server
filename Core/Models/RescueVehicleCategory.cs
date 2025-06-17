@@ -11,5 +11,6 @@ namespace Core.Models
         public string Name { get; set; }
 
         public ICollection<RescueVehicle> RescueVehicles { get; set; }
+        public ICollection<EmergencyToVehicle> EmergencyToVehicles { get; set; }
     }
 }

@@ -49,6 +49,10 @@ namespace Infrastructure.Data
         public DbSet<RescueVehicleRequest> RescueVehicleRequests { get; set; }
         public DbSet<RescueVehicleAssignment> RescueVehicleAssignments { get; set; }
 
+        public DbSet<EmergencyCategory> EmergencyCategories { get; set; }
+        public DbSet<EmergencyToCivilian> EmergencyToCivilians { get; set; }
+        public DbSet<EmergencyToVehicle> EmergencyToVehicles { get; set; }
+
         public DbSet<SnakeType> SnakeTypes { get; set; }
 
         public DbSet<User> Users { get; set; }
