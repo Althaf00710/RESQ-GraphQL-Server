@@ -1,5 +1,4 @@
-﻿using Core.models;
-using Core.Models;
+﻿using Core.Models;
 using HotChocolate.Types;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.DTO;
-using Core.models;
+using Core.Models;
 
 namespace Application.Mapping
 {

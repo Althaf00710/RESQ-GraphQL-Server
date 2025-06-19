@@ -1,5 +1,5 @@
 ﻿using Application.Services.Generic;
-using Core.models;
+using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
 

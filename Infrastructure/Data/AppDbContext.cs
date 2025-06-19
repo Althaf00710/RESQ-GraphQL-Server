@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.models;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +27,7 @@ namespace Infrastructure.Data
 
             modelBuilder.Entity<CivilianStatusRequest>()
                 .HasOne(r => r.CivilianStatus)
-                .WithMany(t => t.CivilianTypeRequests)
+                .WithMany(t => t.CivilianStatusRequests)
                 .HasForeignKey(r => r.CivilianStatusId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
@@ -39,9 +38,7 @@ namespace Infrastructure.Data
         public DbSet<CivilianStatus> CivilianStatuses { get; set; }
         public DbSet<CivilianStatusRequest> CivilianStatusRequests { get; set; }
 
-        public DbSet<FirstAidCategory> FirstAidCategories { get; set; }
         public DbSet<FirstAidDetail> FirstAidDetails { get; set; }
-        public DbSet<FirstAid> FirstAids { get; set; }
 
         public DbSet<RescueVehicle> RescueVehicles { get; set; }
         public DbSet<RescueVehicleLocation> RescueVehicleLocations { get; set; }
@@ -50,6 +47,7 @@ namespace Infrastructure.Data
         public DbSet<RescueVehicleAssignment> RescueVehicleAssignments { get; set; }
 
         public DbSet<EmergencyCategory> EmergencyCategories { get; set; }
+        public DbSet<EmergencySubCategory> EmergencySubCategories { get; set; }
         public DbSet<EmergencyToCivilian> EmergencyToCivilians { get; set; }
         public DbSet<EmergencyToVehicle> EmergencyToVehicles { get; set; }
 

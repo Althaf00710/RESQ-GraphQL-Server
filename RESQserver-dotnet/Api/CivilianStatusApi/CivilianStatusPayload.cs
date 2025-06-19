@@ -1,5 +1,4 @@
-﻿using Core.models;
-using Core.Models;
+﻿using Core.Models;
 
 namespace RESQserver_dotnet.Api.CivilianStatusApi
 {

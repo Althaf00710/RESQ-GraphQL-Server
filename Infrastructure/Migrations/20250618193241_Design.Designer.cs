@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250617182834_AddEmergency")]
-    partial class AddEmergency
+    [Migration("20250618193241_Design")]
+    partial class Design
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,6 +162,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -169,6 +172,34 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmergencyCategories");
+                });
+
+            modelBuilder.Entity("Core.Models.EmergencySubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmergencyCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmergencyCategoryId");
+
+                    b.ToTable("EmergencySubCategories");
                 });
 
             modelBuilder.Entity("Core.Models.EmergencyToCivilian", b =>
@@ -217,7 +248,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("EmergencyToVehicles");
                 });
 
-            modelBuilder.Entity("Core.Models.FirstAid", b =>
+            modelBuilder.Entity("Core.Models.FirstAidDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,104 +256,14 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("FirstAids");
-                });
-
-            modelBuilder.Entity("Core.Models.RescueVehicleCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("EmergencySubCategoryId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RescueVehicleCategories");
-                });
-
-            modelBuilder.Entity("Core.Models.SnakeType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ScientificName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VenomType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SnakeTypes");
-                });
-
-            modelBuilder.Entity("Core.models.FirstAidCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FirstAidCategories");
-                });
-
-            modelBuilder.Entity("Core.models.FirstAidDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FirstAidId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
 
                     b.Property<string>("Point")
                         .IsRequired()
@@ -330,12 +271,12 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FirstAidId");
+                    b.HasIndex("EmergencySubCategoryId");
 
                     b.ToTable("FirstAidDetails");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicle", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -369,7 +310,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("RescueVehicles");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleAssignment", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleAssignment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -405,7 +346,24 @@ namespace Infrastructure.Migrations
                     b.ToTable("RescueVehicleAssignments");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleLocation", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RescueVehicleCategories");
+                });
+
+            modelBuilder.Entity("Core.Models.RescueVehicleLocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -436,7 +394,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("RescueVehicleLocations");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleRequest", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,7 +434,40 @@ namespace Infrastructure.Migrations
                     b.ToTable("RescueVehicleRequests");
                 });
 
-            modelBuilder.Entity("Core.models.User", b =>
+            modelBuilder.Entity("Core.Models.SnakeType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScientificName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VenomType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SnakeTypes");
+                });
+
+            modelBuilder.Entity("Core.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -545,7 +536,7 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Core.Models.CivilianStatus", "CivilianStatus")
-                        .WithMany("CivilianTypeRequests")
+                        .WithMany("CivilianStatusRequests")
                         .HasForeignKey("CivilianStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -553,6 +544,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Civilian");
 
                     b.Navigation("CivilianStatus");
+                });
+
+            modelBuilder.Entity("Core.Models.EmergencySubCategory", b =>
+                {
+                    b.HasOne("Core.Models.EmergencyCategory", "EmergencyCategory")
+                        .WithMany()
+                        .HasForeignKey("EmergencyCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmergencyCategory");
                 });
 
             modelBuilder.Entity("Core.Models.EmergencyToCivilian", b =>
@@ -593,29 +595,18 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicleCategory");
                 });
 
-            modelBuilder.Entity("Core.Models.FirstAid", b =>
+            modelBuilder.Entity("Core.Models.FirstAidDetail", b =>
                 {
-                    b.HasOne("Core.models.FirstAidCategory", "FirstAidCategory")
-                        .WithMany("FirstAids")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FirstAidCategory");
-                });
-
-            modelBuilder.Entity("Core.models.FirstAidDetail", b =>
-                {
-                    b.HasOne("Core.Models.FirstAid", "FirstAid")
+                    b.HasOne("Core.Models.EmergencySubCategory", "EmergencySubCategory")
                         .WithMany("FirstAidDetails")
-                        .HasForeignKey("FirstAidId")
+                        .HasForeignKey("EmergencySubCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FirstAid");
+                    b.Navigation("EmergencySubCategory");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicle", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicle", b =>
                 {
                     b.HasOne("Core.Models.RescueVehicleCategory", "RescueVehicleCategory")
                         .WithMany("RescueVehicles")
@@ -626,15 +617,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicleCategory");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleAssignment", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleAssignment", b =>
                 {
-                    b.HasOne("Core.models.RescueVehicle", "RescueVehicle")
+                    b.HasOne("Core.Models.RescueVehicle", "RescueVehicle")
                         .WithMany("RescueVehicleAssignment")
                         .HasForeignKey("RescueVehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.models.RescueVehicleRequest", "RescueVehicleRequest")
+                    b.HasOne("Core.Models.RescueVehicleRequest", "RescueVehicleRequest")
                         .WithMany("RescueVehicleAssignments")
                         .HasForeignKey("RescueVehicleRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -645,9 +636,9 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicleRequest");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleLocation", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleLocation", b =>
                 {
-                    b.HasOne("Core.models.RescueVehicle", "RescueVehicle")
+                    b.HasOne("Core.Models.RescueVehicle", "RescueVehicle")
                         .WithMany("RescueVehicleLocations")
                         .HasForeignKey("RescueVehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -656,7 +647,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicle");
                 });
 
-            modelBuilder.Entity("Core.models.RescueVehicleRequest", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleRequest", b =>
                 {
                     b.HasOne("Core.Models.Civilian", "Civilian")
                         .WithMany("RescueVehicleRequests")
@@ -678,7 +669,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Models.CivilianStatus", b =>
                 {
-                    b.Navigation("CivilianTypeRequests");
+                    b.Navigation("CivilianStatusRequests");
 
                     b.Navigation("Civilians");
 
@@ -692,9 +683,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("EmergencyToVehicles");
                 });
 
-            modelBuilder.Entity("Core.Models.FirstAid", b =>
+            modelBuilder.Entity("Core.Models.EmergencySubCategory", b =>
                 {
                     b.Navigation("FirstAidDetails");
+                });
+
+            modelBuilder.Entity("Core.Models.RescueVehicle", b =>
+                {
+                    b.Navigation("RescueVehicleAssignment");
+
+                    b.Navigation("RescueVehicleLocations");
                 });
 
             modelBuilder.Entity("Core.Models.RescueVehicleCategory", b =>
@@ -704,19 +702,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("RescueVehicles");
                 });
 
-            modelBuilder.Entity("Core.models.FirstAidCategory", b =>
-                {
-                    b.Navigation("FirstAids");
-                });
-
-            modelBuilder.Entity("Core.models.RescueVehicle", b =>
-                {
-                    b.Navigation("RescueVehicleAssignment");
-
-                    b.Navigation("RescueVehicleLocations");
-                });
-
-            modelBuilder.Entity("Core.models.RescueVehicleRequest", b =>
+            modelBuilder.Entity("Core.Models.RescueVehicleRequest", b =>
                 {
                     b.Navigation("RescueVehicleAssignments");
                 });

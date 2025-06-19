@@ -2,18 +2,19 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Models;
 
-namespace Core.models
+namespace Core.Models
 {
     public class FirstAidDetail
     {
         [Key]
         public int Id { get; set; }
-        public int FirstAidId { get; set; }
+        public int EmergencySubCategoryId { get; set; }
         public string Point { get; set; }
         [Required]
-        public int Order { get; set; }
+        public int DisplayOrder { get; set; }
+        public string? ImageUrl { get; set; }
 
-        [ForeignKey("FirstAidId")]
-        public FirstAid FirstAid { get; set; }
+        [ForeignKey("EmergencySubCategoryId")]
+        public EmergencySubCategory EmergencySubCategory { get; set; }
     }
 }

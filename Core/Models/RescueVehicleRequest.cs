@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Models;
 
-namespace Core.models
+namespace Core.Models
 {
     public class RescueVehicleRequest
     {

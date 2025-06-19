@@ -2,7 +2,6 @@
 using Application.Utils;
 using AutoMapper;
 using Core.DTO;
-using Core.models;
 using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
@@ -16,7 +15,6 @@ namespace Application.Services
         private readonly ICivilianStatusRequestRepository _repository;
         private readonly ILogger<CivilianStatusRequestService> _logger;
         private readonly IMapper _mapper;
-        private readonly JwtTokenGenerator _jwt;
         private readonly ICivilianService _civilianService;
 
         public CivilianStatusRequestService(ICivilianStatusRequestRepository repository, 
@@ -29,7 +27,6 @@ namespace Application.Services
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-            _jwt = jwt;
             _civilianService = civilianService;
         }
 

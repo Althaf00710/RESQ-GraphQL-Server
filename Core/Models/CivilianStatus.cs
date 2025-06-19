@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Core.models;
 
 namespace Core.Models
 {
@@ -12,7 +11,7 @@ namespace Core.Models
         [Required]
         public string Description { get; set; }
 
-        public ICollection<CivilianStatusRequest> CivilianTypeRequests { get; set; }
+        public ICollection<CivilianStatusRequest> CivilianStatusRequests { get; set; }
         public ICollection<Civilian> Civilians { get; set; }
         public ICollection<EmergencyToCivilian> EmergencyToCivilians { get; set; }
 

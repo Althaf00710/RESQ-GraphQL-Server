@@ -1,4 +1,4 @@
-﻿using Core.models;
+﻿using Core.Models;
 using Core.Repositories.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories.Generic;

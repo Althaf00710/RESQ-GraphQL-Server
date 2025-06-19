@@ -17,9 +17,11 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<ICivilianLocationRepository, CivilianLocationRepository>();
             services.AddScoped<ICivilianStatusRepository, CivilianStatusRepository>();
             services.AddScoped<ICivilianStatusRequestRepository, CivilianStatusRequestRepository>();
-            services.AddScoped<IFirstAidCategoryRepository, FirstAidCategoryRepository>();
+
+            services.AddScoped<IEmergencyCategoryRepository, EmergencyCategoryRepository>();
+            services.AddScoped<IEmergencySubCategoryRepository, EmergencySubCategoryRepository>();
+
             services.AddScoped<IFirstAidDetailRepository, FirstAidDetailRepository>();
-            services.AddScoped<IFirstAidRepository, FirstAidRepository>();
             services.AddScoped<IRescueVehicleAssignmentRepository, RescueVehicleAssignmentRepository>();
             services.AddScoped<IRescueVehicleLocationRepository, RescueVehicleLocationRepository>();
             services.AddScoped<IRescueVehicleRepository, RescueVehicleRepository>();

@@ -1,4 +1,4 @@
-﻿using Core.models;
+﻿
 using Core.Models;
 using HotChocolate.Types;
 using Infrastructure.Data;

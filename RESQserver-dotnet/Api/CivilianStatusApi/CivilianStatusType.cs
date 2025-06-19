@@ -34,7 +34,7 @@ public class CivilianStatusType : ObjectType<CivilianStatus>
                     .ToListAsync();
             });
 
-        descriptor.Field(c => c.CivilianTypeRequests)
+        descriptor.Field(c => c.CivilianStatusRequests)
             .Description("Status change requests for this civilian type")
             .Type<ListType<CivilianStatusRequestType>>()
             .Resolve(async ctx =>

@@ -1,5 +1,4 @@
-﻿using Core.models;
-
+﻿
 namespace Core.DTO
 {
     public class UserCreateInput

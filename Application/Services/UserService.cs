@@ -3,7 +3,7 @@ using Application.Services.Generic;
 using Application.Utils;
 using AutoMapper;
 using Core.DTO;
-using Core.models;
+using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
 using HotChocolate.Types;

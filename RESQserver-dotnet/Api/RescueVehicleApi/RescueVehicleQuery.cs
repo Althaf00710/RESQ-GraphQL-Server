@@ -1,4 +1,4 @@
-﻿using Core.models;
+﻿using Core.Models;
 using Core.Services.Interfaces;
 
 namespace RESQserver_dotnet.Api.RescueVehicleApi

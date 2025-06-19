@@ -20,9 +20,11 @@ namespace Application.DependencyInjection
             services.AddScoped<ICivilianLocationService, CivilianLocationService>();
             services.AddScoped<ICivilianStatusService, CivilianStatusService>();
             services.AddScoped<ICivilianStatusRequestService, CivilianStatusRequestService>();
-            services.AddScoped<IFirstAidCategoryService, FirstAidCategoryService>();
+
+            services.AddScoped<IEmergencyCategoryService, EmergencyCategoryService>();
+            services.AddScoped<IEmergencySubCategoryService, EmergencySubCategoryService>();
+
             services.AddScoped<IFirstAidDetailService, FirstAidDetailService>();
-            services.AddScoped<IFirstAidService, FirstAidService>();
             services.AddScoped<IRescueVehicleAssignmentService, RescueVehicleAssignmentService>();
             services.AddScoped<IRescueVehicleLocationService, RescueVehicleLocationService>();
             services.AddScoped<IRescueVehicleService, RescueVehicleService>();
