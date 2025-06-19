@@ -1,4 +1,4 @@
-﻿namespace RESQserver_dotnet.Api.FirstAidDetail
+﻿namespace RESQserver_dotnet.Api.FirstAidDetailApi
 {
     public class FirstAidDetailQuery
     {

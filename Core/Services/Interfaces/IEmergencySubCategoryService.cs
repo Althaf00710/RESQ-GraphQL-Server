@@ -8,5 +8,6 @@ namespace Core.Services.Interfaces
     {
         Task<EmergencySubCategory> Add(EmergencySubCategoryCreateInput dto, IFile? image);
         Task<EmergencySubCategory> Update(int id, EmergencySubCategoryUpdateInput dto, IFile? image);
+
     }
 }

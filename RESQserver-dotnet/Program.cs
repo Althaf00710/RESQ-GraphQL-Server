@@ -1,4 +1,5 @@
 using Application.DependencyInjection;
+using Core.Models;
 using Infrastructure.Data;
 using Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using RESQserver_dotnet.Api.CivilianLocationApi;
 using RESQserver_dotnet.Api.CivilianStatusApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;
 using RESQserver_dotnet.Api.EmergencyCategoryApi;
+using RESQserver_dotnet.Api.EmergencySubCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleLocationApi;
@@ -16,7 +18,8 @@ using RESQserver_dotnet.Api.UserApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ResqDB"), sql => sql.MigrationsAssembly("Infrastructure")));
+builder.Services.AddDbContext<AppDbContext>
+    (options => options.UseSqlServer(builder.Configuration.GetConnectionString("ResqDB"), sql => sql.MigrationsAssembly("Infrastructure")));
 
 //builder.Services.AddDbContext<AppDbContext>(options =>
 //    options.UseInMemoryDatabase("ResqInMemoryDB"));
@@ -63,6 +66,7 @@ builder.Services
     .AddTypeExtension<CivilianStatusRequestQuery>()
     .AddTypeExtension<CivilianLocationQuery>()
     .AddTypeExtension<EmergencyCategoryQuery>()
+    .AddTypeExtension<EmergencySubCategoryQuery>()
     .AddTypeExtension<RescueVehicleCategoryQuery>()
     .AddTypeExtension<RescueVehicleQuery>()
     .AddTypeExtension<RescueVehicleLocationQuery>()
@@ -74,6 +78,7 @@ builder.Services
     .AddTypeExtension<CivilianStatusRequestMutation>()
     .AddTypeExtension<CivilianLocationMutation>()
     .AddTypeExtension<EmergencyCategoryMutation>()
+    .AddTypeExtension<EmergencySubCategoryMutation>()
     .AddTypeExtension<RescueVehicleCategoryMutation>()
     .AddTypeExtension<RescueVehicleMutation>()
     .AddTypeExtension<RescueVehicleLocationMutation>()
@@ -84,6 +89,7 @@ builder.Services
     .AddType<CivilianStatusRequestType>()
     .AddType<CivilianLocationType>()
     .AddType<EmergencyCategoryType>()
+    .AddType<EmergencySubCategoryType>()
     .AddType<RescueVehicleCategoryType>()
     .AddType<RescueVehicleType>()
     .AddType<RescueVehicleLocationType>()

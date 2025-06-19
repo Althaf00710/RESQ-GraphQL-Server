@@ -25,14 +25,47 @@ namespace Application.Services
             _mapper = mapper;
             _logger = logger;
         }
-        public Task<EmergencySubCategory> Add(EmergencySubCategoryCreateInput dto, IFile? image)
+        public async Task<EmergencySubCategory> Add(EmergencySubCategoryCreateInput dto, IFile? image)
         {
-            throw new NotImplementedException();
+            await Validate(dto.Name, dto.EmergencyCategoryId);
+
+            var entity = _mapper.Map<EmergencySubCategory>(dto);
+            await _repository.AddAsync(entity);
+            await _repository.SaveAsync();
+
+            _logger.LogInformation("Emergency subcategory {SubCategoryName} created", dto.Name);
+            return entity;
         }
 
-        public Task<EmergencySubCategory> Update(int id, EmergencySubCategoryUpdateInput dto, IFile? image)
+        public async Task<EmergencySubCategory> Update(int id, EmergencySubCategoryUpdateInput dto, IFile? image)
         {
-            throw new NotImplementedException();
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+            {
+                _logger.LogWarning("Emergency subcategory with ID {SubCategoryId} not found", id);
+                throw new Exception($"Emergency subcategory with ID {id} not found");
+            }
+
+            if (dto.Name != null && dto.Name != existing.Name)
+            {
+                await Validate(dto.Name, existing.EmergencyCategoryId, id);
+            }
+
+            _mapper.Map(dto, existing);
+            await _repository.SaveAsync();
+
+            _logger.LogInformation("Emergency subcategory {SubCategoryId} updated", id);
+            return existing;
+        }
+
+        private async Task Validate(string name, int categoryId, int? excludeId = null)
+        {
+            if (await _repository.ExistAsync(name, categoryId, excludeId))
+            {
+                var message = $"Subcategory '{name}' already exists in this category";
+                _logger.LogWarning(message);
+                throw new Exception(message);
+            }
         }
     }
 }
