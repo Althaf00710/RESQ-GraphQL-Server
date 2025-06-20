@@ -10,6 +10,7 @@ using RESQserver_dotnet.Api.CivilianStatusApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;
 using RESQserver_dotnet.Api.EmergencyCategoryApi;
 using RESQserver_dotnet.Api.EmergencySubCategoryApi;
+using RESQserver_dotnet.Api.FirstAidDetailApi;
 using RESQserver_dotnet.Api.RescueVehicleApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleLocationApi;
@@ -67,6 +68,7 @@ builder.Services
     .AddTypeExtension<CivilianLocationQuery>()
     .AddTypeExtension<EmergencyCategoryQuery>()
     .AddTypeExtension<EmergencySubCategoryQuery>()
+    .AddTypeExtension<FirstAidDetailQuery>()
     .AddTypeExtension<RescueVehicleCategoryQuery>()
     .AddTypeExtension<RescueVehicleQuery>()
     .AddTypeExtension<RescueVehicleLocationQuery>()
@@ -79,6 +81,7 @@ builder.Services
     .AddTypeExtension<CivilianLocationMutation>()
     .AddTypeExtension<EmergencyCategoryMutation>()
     .AddTypeExtension<EmergencySubCategoryMutation>()
+    .AddTypeExtension<FirstAidDetailMutation>()
     .AddTypeExtension<RescueVehicleCategoryMutation>()
     .AddTypeExtension<RescueVehicleMutation>()
     .AddTypeExtension<RescueVehicleLocationMutation>()
@@ -90,6 +93,7 @@ builder.Services
     .AddType<CivilianLocationType>()
     .AddType<EmergencyCategoryType>()
     .AddType<EmergencySubCategoryType>()
+    .AddType<FirstAidDetailType>()
     .AddType<RescueVehicleCategoryType>()
     .AddType<RescueVehicleType>()
     .AddType<RescueVehicleLocationType>()

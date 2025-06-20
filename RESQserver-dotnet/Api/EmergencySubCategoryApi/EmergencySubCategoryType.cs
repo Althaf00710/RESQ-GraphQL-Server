@@ -55,7 +55,7 @@ namespace RESQserver_dotnet.Api.EmergencySubCategoryApi
                     return await db.FirstAidDetails
                         .AsNoTracking()
                         .Where(fad => fad.EmergencySubCategoryId == ctx.Parent<EmergencySubCategory>().Id)
-                        .OrderBy(fad => fad.Order)
+                        .OrderBy(fad => fad.DisplayOrder)
                         .ToListAsync();
                 });
         }

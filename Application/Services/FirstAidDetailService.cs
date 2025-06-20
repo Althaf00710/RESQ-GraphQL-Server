@@ -1,4 +1,5 @@
 ﻿using Application.Services.Generic;
+using Application.Utils;
 using AutoMapper;
 using Core.DTO;
 using Core.Models;
@@ -26,6 +27,21 @@ namespace Application.Services
             await ValidateFirstAidDetail(dto.EmergencySubCategoryId, dto.Point);
 
             var entity = _mapper.Map<FirstAidDetail>(dto);
+
+            if (image is not null)
+            {
+                try
+                {
+                    entity.ImageUrl = await FileHandler.StoreImage("firstaid", image);
+                    _logger.LogInformation("First aid image stored at: {Path}", entity.ImageUrl);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to store first aid image");
+                    throw new Exception("Failed to upload first aid image");
+                }
+            }
+
             await _repository.AddAsync(entity);
             await _repository.SaveAsync();
 
@@ -53,6 +69,29 @@ namespace Application.Services
             }
 
             _mapper.Map(dto, existing);
+
+            if (image is not null)
+            {
+                try
+                {
+                    var newPath = await FileHandler.StoreImage("firstaid", image);
+
+                    if (!string.IsNullOrEmpty(existing.ImageUrl))
+                    {
+                        var deleted = FileHandler.DeleteImage(existing.ImageUrl);
+                        _logger.LogInformation("Old first aid image deleted: {Result}", deleted);
+                    }
+
+                    existing.ImageUrl = newPath;
+                    _logger.LogInformation("New first aid image stored at: {Path}", newPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to store new first aid image. Skipping image update.");
+                    throw new Exception("Failed to update first aid image");
+                }
+            }
+
             await _repository.SaveAsync();
 
             _logger.LogInformation("First aid detail {DetailId} updated", id);
