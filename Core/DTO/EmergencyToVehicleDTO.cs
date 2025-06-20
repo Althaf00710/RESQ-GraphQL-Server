@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.DTO
 {
-    public class EmergencyToCivilianInput
+    public class EmergencyToVehicleInput
     {
         public int EmergencyCategoryId { get; set; }
-        public int CivilianStatusId { get; set; }
+        public int VehicleCategoryId { get; set; }
     }
 }

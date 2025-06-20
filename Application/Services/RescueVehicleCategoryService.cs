@@ -12,7 +12,6 @@ namespace Application.Services
     {
         private readonly IRescueVehicleCategoryRepository _repository;
         private readonly ILogger<RescueVehicleCategoryService> _logger;
-        private readonly JwtTokenGenerator _jwt;
 
         public RescueVehicleCategoryService(
             IRescueVehicleCategoryRepository repository,
@@ -21,7 +20,6 @@ namespace Application.Services
         {
             _repository = repository;
             _logger = logger;
-            _jwt = jwt;
         }
 
         public async Task<RescueVehicleCategory> Add(RescueVehicleCategoryCreateInput dto)
