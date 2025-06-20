@@ -20,13 +20,17 @@ namespace Infrastructure.DependencyInjection
 
             services.AddScoped<IEmergencyCategoryRepository, EmergencyCategoryRepository>();
             services.AddScoped<IEmergencySubCategoryRepository, EmergencySubCategoryRepository>();
+            services.AddScoped<IEmergencyToCivilianRepository, EmergencyToCivilianRepository>();
+            services.AddScoped<IEmergencyToVehicleRepository, EmergencyToVehicleRepository>();
 
             services.AddScoped<IFirstAidDetailRepository, FirstAidDetailRepository>();
+
             services.AddScoped<IRescueVehicleAssignmentRepository, RescueVehicleAssignmentRepository>();
             services.AddScoped<IRescueVehicleLocationRepository, RescueVehicleLocationRepository>();
             services.AddScoped<IRescueVehicleRepository, RescueVehicleRepository>();
             services.AddScoped<IRescueVehicleRequestRepository, RescueVehicleRequestRepository>();
             services.AddScoped<IRescueVehicleCategoryRepository, RescueVehicleCategoryRepository>();
+
             services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
