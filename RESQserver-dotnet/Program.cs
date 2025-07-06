@@ -17,6 +17,7 @@ using RESQserver_dotnet.Api.RescueVehicleApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleLocationApi;
 using RESQserver_dotnet.Api.RescueVehicleTypeApi;
+using RESQserver_dotnet.Api.SnakeApi;
 using RESQserver_dotnet.Api.UserApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,7 @@ builder.Services
     .AddTypeExtension<RescueVehicleCategoryQuery>()
     .AddTypeExtension<RescueVehicleQuery>()
     .AddTypeExtension<RescueVehicleLocationQuery>()
+    .AddTypeExtension<SnakeQuery>()
 
     .AddMutationType<Mutation>()
     .AddTypeExtension<UserMutation>()
@@ -93,6 +95,7 @@ builder.Services
     .AddTypeExtension<RescueVehicleCategoryMutation>()
     .AddTypeExtension<RescueVehicleMutation>()
     .AddTypeExtension<RescueVehicleLocationMutation>()
+    .AddTypeExtension<SnakeMutation>()
 
     .AddType<UserType>()
     .AddType<CivilianStatusType>()
@@ -107,6 +110,7 @@ builder.Services
     .AddType<RescueVehicleCategoryType>()
     .AddType<RescueVehicleType>()
     .AddType<RescueVehicleLocationType>()
+    .AddType<Snake>()
     .AddType<UploadType>();
 
 var app = builder.Build();

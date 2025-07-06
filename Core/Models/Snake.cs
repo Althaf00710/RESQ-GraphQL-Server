@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class SnakeType
+    public class Snake
     {
         [Key]
         public int Id { get; set; }

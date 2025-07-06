@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\uploads\civilian-status-requests\" />
+    <Folder Include="wwwroot\uploads\snakes\" />
     <Folder Include="wwwroot\uploads\users\" />
   </ItemGroup>
 

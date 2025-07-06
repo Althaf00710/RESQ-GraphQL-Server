@@ -51,7 +51,7 @@ namespace Infrastructure.Data
         public DbSet<EmergencyToCivilian> EmergencyToCivilians { get; set; }
         public DbSet<EmergencyToVehicle> EmergencyToVehicles { get; set; }
 
-        public DbSet<SnakeType> SnakeTypes { get; set; }
+        public DbSet<Snake> Snakes { get; set; }
 
         public DbSet<User> Users { get; set; }
     }

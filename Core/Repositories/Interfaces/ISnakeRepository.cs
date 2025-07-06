@@ -8,7 +8,8 @@ using Core.Repositories.Generic;
 
 namespace Core.Repositories.Interfaces
 {
-    public interface ISnakeTypeRepository : IRepository<SnakeType>
+    public interface ISnakeRepository : IRepository<Snake>
     {
+        Task<bool> CheckExist(string scientificName);
     }
 }
