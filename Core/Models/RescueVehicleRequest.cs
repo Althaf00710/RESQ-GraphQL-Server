@@ -10,16 +10,18 @@ namespace Core.Models
         public int Id { get; set; }
         public int CivilianId { get; set; }
         [Required]
-        public string Reason { get; set; }
+        public int EmergencyCategoryId { get; set; }
+        public string? Description { get; set; }
         [Required]
         public string Location { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public string Status { get; set; }
-        public string proofImage { get; set; }
+        public string? proofImage { get; set; }
 
 
         [ForeignKey(nameof(CivilianId))]
+        public EmergencyCategory EmergencyCategory { get; set; }
         public Civilian Civilian { get; set; }
         public ICollection<RescueVehicleAssignment> RescueVehicleAssignments { get; set; }
     }
