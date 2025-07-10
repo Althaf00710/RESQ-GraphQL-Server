@@ -15,8 +15,9 @@ namespace Application.Mapping
         {
             CreateMap<RescueVehicleRequestCreateInput, RescueVehicleRequest>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Pending")) // Default status
-                .ForMember(dest => dest.proofImage, opt => opt.MapFrom(src => src.ProofImage))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Searching")) // Default status
+                .ForMember(dest => dest.ProofImageURL, opt => opt.MapFrom(src => src.ProofImage))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.EmergencyCategory, opt => opt.Ignore())
                 .ForMember(dest => dest.Civilian, opt => opt.Ignore())
                 .ForMember(dest => dest.RescueVehicleAssignments, opt => opt.Ignore());

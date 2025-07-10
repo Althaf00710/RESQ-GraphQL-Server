@@ -6,7 +6,7 @@ using RESQserver_dotnet.Api.CivilianStatusApi;
 using Microsoft.EntityFrameworkCore;
 using RESQserver_dotnet.Api.CivilianLocationApi;
 using RESQserver_dotnet.Api.CivilianStatusRequestApi;
-using RESQserver_dotnet.Api.RescueVehicleRequest;
+using RESQserver_dotnet.Api.RescueVehicleRequestApi;
 
 namespace RESQserver_dotnet.Api.CivilianApi
 {

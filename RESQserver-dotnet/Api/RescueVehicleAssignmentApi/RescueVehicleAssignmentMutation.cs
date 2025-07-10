@@ -1,4 +1,4 @@
-﻿namespace RESQserver_dotnet.Api.RescueVehicleAssignment
+﻿namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
 {
     public class RescueVehicleAssignmentMutation
     {

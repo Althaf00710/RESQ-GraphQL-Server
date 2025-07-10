@@ -16,6 +16,7 @@ using RESQserver_dotnet.Api.FirstAidDetailApi;
 using RESQserver_dotnet.Api.RescueVehicleApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using RESQserver_dotnet.Api.RescueVehicleLocationApi;
+using RESQserver_dotnet.Api.RescueVehicleRequestApi;
 using RESQserver_dotnet.Api.RescueVehicleTypeApi;
 using RESQserver_dotnet.Api.SnakeApi;
 using RESQserver_dotnet.Api.UserApi;
@@ -79,6 +80,7 @@ builder.Services
     .AddTypeExtension<RescueVehicleCategoryQuery>()
     .AddTypeExtension<RescueVehicleQuery>()
     .AddTypeExtension<RescueVehicleLocationQuery>()
+    .AddTypeExtension<RescueVehicleRequestQuery>()
     .AddTypeExtension<SnakeQuery>()
 
     .AddMutationType<Mutation>()
@@ -95,6 +97,7 @@ builder.Services
     .AddTypeExtension<RescueVehicleCategoryMutation>()
     .AddTypeExtension<RescueVehicleMutation>()
     .AddTypeExtension<RescueVehicleLocationMutation>()
+    .AddTypeExtension<RescueVehicleRequestMutation>()
     .AddTypeExtension<SnakeMutation>()
 
     .AddType<UserType>()
@@ -110,6 +113,7 @@ builder.Services
     .AddType<RescueVehicleCategoryType>()
     .AddType<RescueVehicleType>()
     .AddType<RescueVehicleLocationType>()
+    .AddType<RescueVehicleRequestType>()
     .AddType<Snake>()
     .AddType<UploadType>();
 

@@ -3,7 +3,7 @@ using Core.Models;
 using HotChocolate.Types;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using RESQserver_dotnet.Api.RescueVehicleAssignment;
+using RESQserver_dotnet.Api.RescueVehicleAssignmentApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
 using System.Threading.Tasks;
 

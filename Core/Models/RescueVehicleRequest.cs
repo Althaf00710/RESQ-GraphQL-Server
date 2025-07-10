@@ -17,7 +17,9 @@ namespace Core.Models
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public string Status { get; set; }
-        public string? proofImage { get; set; }
+        public string? ProofImageURL { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
 
 
         [ForeignKey(nameof(CivilianId))]
