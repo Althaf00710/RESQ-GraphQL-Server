@@ -81,5 +81,10 @@ namespace Application.Services
         {
             return await _repository.UnmappedEmergencyToCivilian(civilianStatusId);
         }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToVehicle(int vehicleCategoryId)
+        {
+            return await _repository.UnmappedEmergencyToVehicle(vehicleCategoryId);
+        }
     }
 }

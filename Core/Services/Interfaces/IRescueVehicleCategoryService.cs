@@ -8,5 +8,6 @@ namespace Core.Services.Interfaces
     {
         Task<RescueVehicleCategory> Add(RescueVehicleCategoryCreateInput dto);
         Task<RescueVehicleCategory> Update(int id, RescueVehicleCategoryUpdateInput dto);
+        Task<bool> CategoryExistsAsync(string category, int? excludeId = null);
     }
 }

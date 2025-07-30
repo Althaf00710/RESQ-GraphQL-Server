@@ -12,5 +12,6 @@ namespace Core.Repositories.Interfaces
     {
         Task<bool> ExistAsync(string emergency, int? excludeId = null);
         Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId);
+        Task<List<EmergencyCategory>> UnmappedEmergencyToVehicle(int vehicleCategoryId);
     }
 }

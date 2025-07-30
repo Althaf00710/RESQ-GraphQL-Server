@@ -16,7 +16,7 @@ namespace RESQserver_dotnet.Api.RescueVehicleCategoryApi
 
             descriptor.Field(c => c.Id)
                 .Description("The unique identifier for the vehicle category")
-                .Type<NonNullType<IdType>>();
+                .Type<NonNullType<IntType>>();
 
             descriptor.Field(c => c.Name)
                 .Description("The name of the vehicle category")
@@ -30,6 +30,20 @@ namespace RESQserver_dotnet.Api.RescueVehicleCategoryApi
                     var db = ctx.Service<AppDbContext>();
                     return await db.RescueVehicles
                         .Where(v => v.RescueVehicleCategoryId == ctx.Parent<RescueVehicleCategory>().Id)
+                        .ToListAsync();
+                });
+
+            descriptor.Field(c => c.EmergencyToVehicles)
+                .Name("emergencyToVehicles")
+                .Description("List of emergency categories that this vehicle category can respond to")
+                .Type<NonNullType<ListType<NonNullType<ObjectType<EmergencyToVehicle>>>>>() 
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    var categoryId = ctx.Parent<RescueVehicleCategory>().Id;
+                    return await db.EmergencyToVehicles
+                        .Include(link => link.EmergencyCategory)
+                        .Where(link => link.VehicleCategoryId == categoryId)
                         .ToListAsync();
                 });
         }

@@ -29,5 +29,13 @@ namespace Infrastructure.Repositories
                     .Any(link => link.CivilianStatusId == civilianStatusId))
                 .ToListAsync();
         }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToVehicle(int vehicleCategoryId)
+        {
+            return await _context.EmergencyCategories
+                .Where(ec => !ec.EmergencyToVehicles
+                    .Any(link => link.VehicleCategoryId == vehicleCategoryId))
+                .ToListAsync();
+        }
     }
 }

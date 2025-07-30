@@ -10,5 +10,6 @@ namespace Core.Services.Interfaces
         Task<EmergencyCategory> Update(int id, EmergencyCategoryUpdateInput dto);
         Task<bool> CheckExist(string name, int? excludeId = null);
         Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId);
+        Task<List<EmergencyCategory>> UnmappedEmergencyToVehicle(int vehicleCategoryId);
     }
 }

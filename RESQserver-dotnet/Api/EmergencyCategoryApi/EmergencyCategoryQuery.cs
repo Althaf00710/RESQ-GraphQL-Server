@@ -25,5 +25,10 @@ namespace RESQserver_dotnet.Api.EmergencyCategoryApi
         {
             return await service.UnmappedEmergencyToCivilian(civilianStatusId);
         }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToVehicle(int vehicleCategoryId, [Service] IEmergencyCategoryService service)
+        {
+            return await service.UnmappedEmergencyToVehicle(vehicleCategoryId);
+        }
     }
 }

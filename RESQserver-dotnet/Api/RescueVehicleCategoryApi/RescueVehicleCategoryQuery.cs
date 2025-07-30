@@ -15,5 +15,10 @@ namespace RESQserver_dotnet.Api.RescueVehicleTypeApi
         {
             return await service.GetByIdAsync(id);
         }
+
+        public async Task<bool> IsRescueVehicleCategoryExists(string category, int? excludeId, [Service] IRescueVehicleCategoryService service)
+        {
+            return await service.CategoryExistsAsync(category, excludeId);
+        }
     }
 }
