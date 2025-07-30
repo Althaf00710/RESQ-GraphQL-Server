@@ -30,6 +30,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IRescueVehicleCategoryService, RescueVehicleCategoryService>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISnakeService, SnakeService>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<JwtTokenGenerator>();

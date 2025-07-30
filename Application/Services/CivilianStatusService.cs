@@ -26,7 +26,8 @@ namespace Application.Services
 
             var entity = new CivilianStatus
             {
-                Role = dto.Role
+                Role = dto.Role,
+                Description = dto.Description
             };
 
             await _repository.AddAsync(entity);
@@ -51,6 +52,7 @@ namespace Application.Services
             try
             {
                 existing.Role = dto.Role;
+                existing.Description = dto.Description;
                 await _repository.SaveAsync();
 
                 _logger.LogInformation("Civilian status with ID {Id} updated successfully", id);
@@ -63,6 +65,11 @@ namespace Application.Services
             }
         }
 
+        public async Task<bool> RoleExistAsync(string role, int? excludeId = null)
+        {
+            return await _repository.RoleExistsAsync(role, excludeId);
+        }
+
         private async Task ValidateAsync(string? role, int? excludeId = null)
         {
             if (string.IsNullOrWhiteSpace(role))
@@ -71,7 +78,7 @@ namespace Application.Services
                 throw new ArgumentNullException(nameof(role), "Role cannot be null or empty");
             }
 
-            if (await _repository.RoleExistsAsync(role, excludeId))
+            if (await RoleExistAsync(role, excludeId))
             {
                 _logger.LogWarning("Role {Role} already exists", role);
                 throw new Exception("Another civilian status with this role already exists");

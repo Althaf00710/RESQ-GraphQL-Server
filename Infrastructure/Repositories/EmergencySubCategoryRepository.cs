@@ -32,5 +32,14 @@ namespace Infrastructure.Repositories
 
             return query.AnyAsync();
         }
+
+        public async Task<List<EmergencySubCategory>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _context.EmergencySubCategories
+                .Where(esc => esc.EmergencyCategoryId == categoryId)
+                .ToListAsync();
+        }
+
+
     }
 }

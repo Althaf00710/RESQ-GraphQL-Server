@@ -57,6 +57,11 @@ namespace Application.Services
             return existing;
         }
 
+        public async Task<bool> CheckExist(string name, int? excludeId = null)
+        {
+            return await _repository.ExistAsync(name, excludeId);
+        }
+
         private async Task ValidateAsync(string? name, int? excludeId = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -65,11 +70,16 @@ namespace Application.Services
                 throw new ArgumentNullException(nameof(name), "Category name cannot be null or empty");
             }
 
-            if (await _repository.ExistAsync(name, excludeId))
+            if (await CheckExist(name, excludeId))
             {
                 _logger.LogWarning("Category name '{Name}' already exists", name);
                 throw new Exception("Another emergency category with this name already exists");
             }
+        }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId)
+        {
+            return await _repository.UnmappedEmergencyToCivilian(civilianStatusId);
         }
     }
 }

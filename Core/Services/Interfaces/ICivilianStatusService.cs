@@ -8,6 +8,8 @@ namespace Core.Services.Interfaces
     {
         Task<CivilianStatus> Add(CivilianStatusCreateInput dto);
         Task<CivilianStatus> Update(int id, CivilianStatusUpdateInput dto);
-        
+        Task<bool> RoleExistAsync(string role, int? excludeId = null);
+
+
     }
 }

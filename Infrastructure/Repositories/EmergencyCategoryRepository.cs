@@ -21,5 +21,13 @@ namespace Infrastructure.Repositories
                 ec.Name.ToLower() == emergency.ToLower() &&
                 (!excludeId.HasValue || ec.Id != excludeId));
         }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId)
+        {
+            return await _context.EmergencyCategories
+                .Where(ec => !ec.EmergencyToCivilians
+                    .Any(link => link.CivilianStatusId == civilianStatusId))
+                .ToListAsync();
+        }
     }
 }

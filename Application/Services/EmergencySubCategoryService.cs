@@ -37,6 +37,11 @@ namespace Application.Services
             return entity;
         }
 
+        public async Task<List<EmergencySubCategory>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _repository.GetByCategoryIdAsync(categoryId);
+        }
+
         public async Task<EmergencySubCategory> Update(int id, EmergencySubCategoryUpdateInput dto, IFile? image)
         {
             var existing = await _repository.GetByIdAsync(id);
@@ -58,9 +63,14 @@ namespace Application.Services
             return existing;
         }
 
+        public async Task<bool> CheckExist(string name, int categoryId, int? excludeId=null)
+        {
+            return await _repository.ExistAsync(name, categoryId, excludeId);
+        } 
+
         private async Task Validate(string name, int categoryId, int? excludeId = null)
         {
-            if (await _repository.ExistAsync(name, categoryId, excludeId))
+            if (await CheckExist(name, categoryId, excludeId))
             {
                 var message = $"Subcategory '{name}' already exists in this category";
                 _logger.LogWarning(message);

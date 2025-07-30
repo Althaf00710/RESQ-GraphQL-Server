@@ -10,5 +10,6 @@ namespace Core.Models
 
         public ICollection<EmergencyToVehicle> EmergencyToVehicles { get; set; }
         public ICollection<EmergencyToCivilian> EmergencyToCivilians { get; set; }
+        public ICollection<EmergencySubCategory> EmergencySubCategories { get; set; }
     }
 }

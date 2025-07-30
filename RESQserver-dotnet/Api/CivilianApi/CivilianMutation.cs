@@ -35,7 +35,7 @@ namespace RESQserver_dotnet.Api.CivilianApi
             }
         }
 
-        public async Task<CivilianPayload> DeleteCivilianStatus(
+        public async Task<CivilianPayload> DeleteCivilian(
             int id,
             [Service] ICivilianService service)
         {

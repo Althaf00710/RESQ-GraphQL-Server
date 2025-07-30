@@ -8,6 +8,8 @@ namespace Core.Services.Interfaces
     {
         Task<User> Add(UserCreateInput dto, IFile? profilePicture);
         Task<User> Update(int id, UserUpdateInput dto, IFile? profilePicture);
-        Task<string> Login(string username, string password);
+        Task<UserLogin> Login(string username, string password);
+        Task<bool> CheckUsernameExistsAsync(string username);
+        Task<bool> CheckEmailExistsAsync(string email);
     }
 }

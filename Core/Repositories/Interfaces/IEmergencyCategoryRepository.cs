@@ -11,5 +11,6 @@ namespace Core.Repositories.Interfaces
     public interface IEmergencyCategoryRepository : IRepository<EmergencyCategory>
     {
         Task<bool> ExistAsync(string emergency, int? excludeId = null);
+        Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId);
     }
 }

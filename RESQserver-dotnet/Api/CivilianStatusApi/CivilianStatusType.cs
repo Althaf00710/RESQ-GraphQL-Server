@@ -16,7 +16,7 @@ public class CivilianStatusType : ObjectType<CivilianStatus>
         // Configure scalar fields
         descriptor.Field(c => c.Id)
             .Description("The unique identifier of the civilian status.")
-            .Type<NonNullType<IdType>>();
+            .Type<NonNullType<IntType>>();
 
         descriptor.Field(c => c.Role)
             .Description("The role of the civilian.")
@@ -42,6 +42,20 @@ public class CivilianStatusType : ObjectType<CivilianStatus>
                 var db = ctx.Service<AppDbContext>();
                 return await db.CivilianStatusRequests
                     .Where(r => r.CivilianStatusId == ctx.Parent<CivilianStatus>().Id)
+                    .ToListAsync();
+            });
+
+        descriptor.Field(c => c.EmergencyToCivilians)
+            .Name("emergencyToCivilians")
+            .Description("Which emergency categories this status is allowed for")
+            .Type<NonNullType<ListType<NonNullType<ObjectType<EmergencyToCivilian>>>>>()
+            .Resolve(async ctx =>
+            {
+                var db = ctx.Service<AppDbContext>();
+                var statusId = ctx.Parent<CivilianStatus>().Id;
+                return await db.EmergencyToCivilians
+                    .Include(link => link.EmergencyCategory)
+                    .Where(link => link.CivilianStatusId == statusId)
                     .ToListAsync();
             });
     }

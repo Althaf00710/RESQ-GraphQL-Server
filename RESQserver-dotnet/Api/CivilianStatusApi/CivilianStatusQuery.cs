@@ -17,5 +17,9 @@ namespace RESQserver_dotnet.Api.CivilianStatusApi
             return await service.GetByIdAsync(id);
         }
 
+        public async Task<bool> IsCivilianStatusRoleExists(string role, int? excludeId, [Service] ICivilianStatusService service)
+        {
+            return await service.RoleExistAsync(role, excludeId);
+        }
     }
 }

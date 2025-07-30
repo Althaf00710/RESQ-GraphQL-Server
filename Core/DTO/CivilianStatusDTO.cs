@@ -9,10 +9,12 @@ namespace Core.DTO
     public class CivilianStatusCreateInput
     {
         public string Role { get; set; } = null!;
+        public string Description { get; set; } = null!;
     }
 
     public class CivilianStatusUpdateInput
     {
         public string? Role { get; set; } 
+        public string? Description { get; set; }
     }
 }

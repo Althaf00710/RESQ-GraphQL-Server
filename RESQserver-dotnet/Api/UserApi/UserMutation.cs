@@ -50,11 +50,11 @@ namespace RESQserver_dotnet.Api.UserApi
         {
             try
             {
-                var token = await userService.Login(username, password);
+                var authData = await userService.Login(username, password);
 
-                if (token == null) return new UserPayload(false, "Invalid Username or Password");
+                if (authData.JwtToken == null) return new UserPayload(false, "Invalid Username or Password");
                 
-                return new UserPayload(true, token);
+                return new UserPayload(true, authData.JwtToken, authData.User);
             }
             catch (Exception ex)
             {

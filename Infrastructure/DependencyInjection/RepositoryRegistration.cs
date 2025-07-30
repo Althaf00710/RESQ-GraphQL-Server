@@ -32,6 +32,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IRescueVehicleCategoryRepository, RescueVehicleCategoryRepository>();
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISnakeRepository, SnakeRepository>();
 
             return services;
         }

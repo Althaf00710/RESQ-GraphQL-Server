@@ -15,5 +15,15 @@ namespace RESQserver_dotnet.Api.EmergencyCategoryApi
         {
             return await service.GetByIdAsync(id);
         }
+
+        public async Task<bool> GetEmergencyCategoryExist(string name, [Service] IEmergencyCategoryService service, int? excludeId = null)
+        {
+            return await service.CheckExist(name, excludeId);
+        }
+
+        public async Task<List<EmergencyCategory>> UnmappedEmergencyToCivilian(int civilianStatusId, [Service] IEmergencyCategoryService service)
+        {
+            return await service.UnmappedEmergencyToCivilian(civilianStatusId);
+        }
     }
 }

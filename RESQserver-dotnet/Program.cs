@@ -27,10 +27,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("ResqDB"), sql => sql.MigrationsAssembly("Infrastructure")));
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseInMemoryDatabase("ResqInMemoryDB"));
-
-// Add services to the container.
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 
@@ -62,10 +58,21 @@ builder.Services.AddInfrastructure();
 
 //builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost3000",
+        policy => policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
+
+
+
 builder.Services
     .AddGraphQLServer()
     .AddFiltering()
     .AddSorting()
+    .AddProjections()
 
     .AddQueryType<RESQserver_dotnet.Api.Query>()
     .AddTypeExtension<UserQuery>()
@@ -126,5 +133,7 @@ var app = builder.Build();
 app.UseStaticFiles();
 
 app.MapGraphQL();
+
+app.UseCors("AllowLocalhost3000");
 
 app.Run();

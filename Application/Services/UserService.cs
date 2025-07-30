@@ -99,6 +99,12 @@ namespace Application.Services
             if (dto.Name != null) user.Name = dto.Name;
             if (dto.Password != null) user.Password = PasswordHash.HashPassword(dto.Password);
 
+            if (dto.PictureDeleted)
+            {
+                FileHandler.DeleteImage(user.ProfilePicturePath);
+                user.ProfilePicturePath = null;
+            }
+
             if (profilePicture is not null)
             {
                 try
@@ -135,7 +141,7 @@ namespace Application.Services
             return user;
         }
 
-        public async Task<String> Login(string username, string password)
+        public async Task<UserLogin> Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -161,10 +167,31 @@ namespace Application.Services
             await _repository.SaveAsync();
             _logger.LogInformation("User '{Username}' tokken generated successfully", username);
 
-            return _jwt.GenerateToken(user.Id.ToString(), user.Username, "User");
+            return new UserLogin
+            {
+                JwtToken = _jwt.GenerateToken(user.Id.ToString(), user.Username, "User"),
+                User = user
+            };
         }
 
+        public async Task<bool> CheckUsernameExistsAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new Exception("Username must not be empty.");
+            }
 
+            return await _repository.CheckUsernameExistsAsync(username);
+        }
 
+        public async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new Exception("Email must not be empty.");
+            }
+
+            return await _repository.CheckEmailExistsAsync(email);
+        }
     }
 }
