@@ -3,6 +3,7 @@ using Core.Models;
 using Infrastructure.Data;
 using Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using RESQserver_dotnet.Api;
 using RESQserver_dotnet.Api.CivilianApi;
 using RESQserver_dotnet.Api.CivilianLocationApi;
@@ -73,6 +74,8 @@ builder.Services
     .AddFiltering()
     .AddSorting()
     .AddProjections()
+    .AddInMemorySubscriptions()
+    .ModifyCostOptions(o => o.EnforceCostLimits = false)
 
     .AddQueryType<RESQserver_dotnet.Api.Query>()
     .AddTypeExtension<UserQuery>()
@@ -110,6 +113,9 @@ builder.Services
     .AddTypeExtension<RescueVehicleAssignmentMutation>()
     .AddTypeExtension<SnakeMutation>()
 
+    .AddSubscriptionType<Subscription>()
+    .AddTypeExtension<RescueVehicleSubscription>()
+
     .AddType<UserType>()
     .AddType<CivilianStatusType>()
     .AddType<CivilianType>()
@@ -131,6 +137,8 @@ builder.Services
 var app = builder.Build();
 
 app.UseStaticFiles();
+
+app.UseWebSockets();
 
 app.MapGraphQL();
 

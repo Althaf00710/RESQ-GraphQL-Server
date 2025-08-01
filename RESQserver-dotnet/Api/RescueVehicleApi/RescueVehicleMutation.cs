@@ -1,5 +1,6 @@
 ﻿using Core.DTO;
 using Core.Services.Interfaces;
+using RESQserver_dotnet.Api.UserApi;
 
 namespace RESQserver_dotnet.Api.RescueVehicleApi
 {
@@ -42,5 +43,22 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
                 return new RescueVehiclePayload(false, ex.Message);
             }
         }
+
+        public async Task<RescueVehiclePayload> LoginRescueVehicle(string plateNumber, string password, [Service] IRescueVehicleService rescueVehicleService)
+        {
+            try
+            {
+                var authData = await rescueVehicleService.Login(plateNumber, password);
+
+                if (authData.JwtToken == null) return new RescueVehiclePayload(false, "Invalid Username or Password");
+
+                return new RescueVehiclePayload(true, authData.JwtToken, authData.RescueVehicle);
+            }
+            catch (Exception ex)
+            {
+                return new RescueVehiclePayload(false, ex.Message);
+            }
+        }
+
     }
 }

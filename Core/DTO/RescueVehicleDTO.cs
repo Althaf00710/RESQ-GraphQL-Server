@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models;
 
 namespace Core.DTO
 {
@@ -18,5 +19,11 @@ namespace Core.DTO
         public string? PlateNumber { get; set; } 
         public string? Password { get; set; }
         public string? Status { get; set; }
+    }
+
+    public class RescueVehicleLogin
+    {
+        public string JwtToken { get; set; } = null!;
+        public RescueVehicle RescueVehicle { get; set; } = null!;
     }
 }

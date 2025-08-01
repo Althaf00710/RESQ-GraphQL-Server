@@ -11,4 +11,8 @@
     public class Query
     {
     }
+
+    public class Subscription
+    {
+    }
 }

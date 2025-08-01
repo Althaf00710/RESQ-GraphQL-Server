@@ -5,6 +5,7 @@ using Core.DTO;
 using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
+using HotChocolate.Subscriptions;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services
@@ -15,13 +16,18 @@ namespace Application.Services
         private readonly IRescueVehicleCategoryRepository _categoryRepository;
         private readonly ILogger<RescueVehicleService> _logger;
         private readonly IMapper _mapper;
+        private readonly JwtTokenGenerator _jwt;
+        private readonly ITopicEventSender _topicEventSender;
 
-        public RescueVehicleService(IRescueVehicleRepository repository, IRescueVehicleCategoryRepository categoryRepository, ILogger<RescueVehicleService> logger, IMapper mapper) : base(repository)
+        public RescueVehicleService(IRescueVehicleRepository repository, IRescueVehicleCategoryRepository categoryRepository, 
+            ILogger<RescueVehicleService> logger, IMapper mapper, JwtTokenGenerator jwt, ITopicEventSender topicEventSender) : base(repository)
         {
             _repository = repository;
             _categoryRepository = categoryRepository;
             _logger = logger;
             _mapper = mapper;
+            _jwt = jwt;
+            _topicEventSender = topicEventSender;
         }
 
         public async Task<RescueVehicle> Add(RescueVehicleCreateInput dto)
@@ -98,6 +104,51 @@ namespace Application.Services
             }
 
             return 1000; // Fallback if parsing fails
+        }
+
+        public IQueryable<RescueVehicle> Query() =>
+            _repository.Query();
+
+        public async Task<RescueVehicleLogin> Login(string plateNumber, string password)
+        {
+            if (string.IsNullOrWhiteSpace(plateNumber) || string.IsNullOrWhiteSpace(password))
+            {
+                throw new Exception("Plate number and password must not be empty.");
+            }
+
+            var vehicle = await _repository.GetByPlateNumberAsync(plateNumber);
+
+            if (vehicle is null)
+            {
+                _logger.LogWarning("Login failed: Rescue vehicle with plate number '{PlateNumber}' not found", plateNumber);
+                throw new Exception("Invalid plate number or password.");
+            }
+
+            var isPasswordValid = PasswordHash.VerifyPassword(password, vehicle.Password);
+
+            if (!isPasswordValid)
+            {
+                _logger.LogWarning("Login failed: Invalid password for plate number '{PlateNumber}'", plateNumber);
+                throw new Exception("Invalid plate number or password.");
+            }
+
+            vehicle.Status = "Active";
+            await _repository.SaveAsync();
+
+            await EventVehicleStatusAsync(vehicle);
+
+            _logger.LogInformation("Rescue vehicle '{PlateNumber}' token generated successfully", plateNumber);
+
+            return new RescueVehicleLogin
+            {
+                JwtToken = _jwt.GenerateToken(vehicle.Id.ToString(), vehicle.PlateNumber, "RescueVehicle"),
+                RescueVehicle = vehicle
+            };
+        }
+
+        private async Task EventVehicleStatusAsync(RescueVehicle vehicle)
+        {
+            await _topicEventSender.SendAsync("VehicleStatusChanged", vehicle);
         }
     }
 }

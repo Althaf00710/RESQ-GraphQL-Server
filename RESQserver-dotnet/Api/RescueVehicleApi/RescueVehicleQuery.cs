@@ -22,9 +22,14 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
                 return new RescueVehiclePayload(false, ex.Message);
             }
         }
-        public async Task<IEnumerable<RescueVehicle>> GetRescueVehicles([Service] IRescueVehicleService rescueVehicleService)
+
+        [UsePaging(IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        public IQueryable<RescueVehicle> GetRescueVehicles([Service] IRescueVehicleService rescueVehicleService)
         {
-            return await rescueVehicleService.GetAllAsync();
+            return rescueVehicleService.Query();
         }
     }
+    
 }

@@ -15,7 +15,7 @@ namespace Application.Mapping
         {
             CreateMap<RescueVehicleCreateInput, RescueVehicle>()
                 .ForMember(dest => dest.Code, opt => opt.Ignore()) // Will be set in service
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Available"))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Inactive"))
                 .ForMember(dest => dest.RescueVehicleLocations, opt => opt.Ignore())
                 .ForMember(dest => dest.RescueVehicleAssignment, opt => opt.Ignore());
 

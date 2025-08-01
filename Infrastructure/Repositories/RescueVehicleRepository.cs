@@ -14,6 +14,12 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<RescueVehicle?> GetByPlateNumberAsync(string plateNumber)
+        {
+            return await _context.RescueVehicles
+                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber);
+        }
+
         public async Task<string> GetMaxVehicleCodeAsync()
         {
             return await _context.RescueVehicles
@@ -21,5 +27,8 @@ namespace Infrastructure.Repositories
                 .Select(v => v.Code)
                 .FirstOrDefaultAsync();
         }
+
+        public IQueryable<RescueVehicle> Query() =>
+            _context.RescueVehicles.AsNoTracking();
     }
 }

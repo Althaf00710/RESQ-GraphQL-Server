@@ -28,7 +28,7 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
                 .Type<NonNullType<StringType>>();
 
             descriptor.Field(r => r.Status)
-                .Description("The current status of the vehicle (Available, On-Duty, Maintenance)")
+                .Description("The current status of the vehicle (Active, On-Duty, Inactive)")
                 .Type<StringType>();
 
             descriptor.Field(r => r.RescueVehicleCategoryId)

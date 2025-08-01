@@ -8,5 +8,7 @@ namespace Core.Services.Interfaces
     {
         Task<RescueVehicle> Add(RescueVehicleCreateInput dto);
         Task<RescueVehicle> Update(int id, RescueVehicleUpdateInput dto);
+        IQueryable<RescueVehicle> Query();
+        Task<RescueVehicleLogin> Login(string plateNumber, string password);
     }
 }
