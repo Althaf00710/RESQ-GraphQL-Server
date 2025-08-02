@@ -15,13 +15,17 @@ namespace Application.Services
         private readonly ILogger<UserService> _logger;
         private readonly IMapper _mapper;
         private readonly JwtTokenGenerator _jwt;
-
-        public CivilianService(ICivilianRepository repository, ILogger<UserService> logger, IMapper mapper, JwtTokenGenerator jwt) : base(repository)
+        private readonly SmsSender _smsSender;
+        private readonly EmailSender _emailSender;
+        public CivilianService(ICivilianRepository repository, ILogger<UserService> logger, IMapper mapper, JwtTokenGenerator jwt, 
+            SmsSender smsSender, EmailSender emailSender) : base(repository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _jwt = jwt;
+            _smsSender = smsSender;
+            _emailSender = emailSender;
         }
 
         public async Task<Civilian> Add(CivilianCreateInput dto)
@@ -51,10 +55,11 @@ namespace Application.Services
             try
             {
                 civilian.JoinedDate = DateTime.UtcNow;
-                civilian.CivilianStatusId = 1;
+                civilian.CivilianStatusId = 3;
                 await _repository.AddAsync(civilian);
                 await _repository.SaveAsync();
-
+                //await _smsSender.SendSmsAsync(civilian.PhoneNumber, "Welcome to ResQ! You’re now part of our emergency response network. We’re here 24/7. Stay safe!");
+                await _emailSender.SendEmailAsync(civilian.Email, "Welcome to ResQ!", "You’re now part of our emergency response network. We’re here 24/7. Stay safe!");
                 _logger.LogInformation("Civilian created successfully: {Email}", civilian.Email);
             }
             catch (Exception ex)
