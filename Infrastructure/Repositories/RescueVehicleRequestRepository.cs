@@ -3,37 +3,37 @@ using Core.Repositories.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories.Generic;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Infrastructure.Repositories
 {
     public class RescueVehicleRequestRepository : Repository<RescueVehicleRequest>, IRescueVehicleRequestRepository
     {
         private readonly AppDbContext _context;
-        private const double SearchRadius = 50;
-        private const int TimeGap = 10; // In Sri Lanka Average response time is 11 - 15 minutes
+        private readonly GeometryFactory _geometryFactory;
+        private const double SearchRadiusMeters = 50;
+        private const int TimeGapMinutes = 10; // In Sri Lanka Average response time is 11 - 15 minutes
 
-        public RescueVehicleRequestRepository(AppDbContext context) : base(context)
+        public RescueVehicleRequestRepository(AppDbContext context, GeometryFactory geometryFactory) : base(context)
         {
             _context = context;
+            _geometryFactory = geometryFactory;
         }
 
         public async Task<bool> CheckRecentReportings(double longitude, double latitude, int emergencyCategoryId)
         {
             try
             {
-                var now = DateTime.UtcNow;
-                var timeThreshold = now.AddMinutes(-TimeGap);
+                var timeThreshold = DateTime.UtcNow.AddMinutes(-TimeGapMinutes);
+                var searchPoint = _geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
 
-                // Using Haversine formula 
-                // with PostGIS Better but ippothaiku ithu ok
-                var nearbyRequests = await _context.RescueVehicleRequests
-                    .Where(r => r.EmergencyCategoryId == emergencyCategoryId &&
-                                r.CreatedAt >= timeThreshold &&
-                                (Math.Pow(69.1 * (r.Latitude - latitude), 2) +
-                                 Math.Pow(69.1 * (longitude - r.Longitude) * Math.Cos(latitude * Math.PI / 180), 2)) * 1609.344 <= SearchRadius)
+                // Distance is in meters when the column is 'geography'
+                var exists = await _context.RescueVehicleRequests
+                    .Where(r => r.EmergencyCategoryId == emergencyCategoryId && r.CreatedAt >= timeThreshold)
+                    .Where(r => r.Location != null && r.Location.Distance(searchPoint) <= SearchRadiusMeters)
                     .AnyAsync();
 
-                return nearbyRequests;
+                return exists;
             }
             catch (Exception ex)
             {

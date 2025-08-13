@@ -1,10 +1,12 @@
-﻿using Application.Services.Generic;
+﻿using System.Security.Cryptography;
+using Application.Services.Generic;
 using Application.Utils;
 using AutoMapper;
 using Core.DTO;
 using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services
@@ -17,8 +19,9 @@ namespace Application.Services
         private readonly JwtTokenGenerator _jwt;
         private readonly SmsSender _smsSender;
         private readonly EmailSender _emailSender;
-        public CivilianService(ICivilianRepository repository, ILogger<UserService> logger, IMapper mapper, JwtTokenGenerator jwt, 
-            SmsSender smsSender, EmailSender emailSender) : base(repository)
+        private readonly IMemoryCache _cache;
+        public CivilianService(ICivilianRepository repository, ILogger<UserService> logger, IMapper mapper, JwtTokenGenerator jwt,
+            SmsSender smsSender, EmailSender emailSender, IMemoryCache cache) : base(repository)
         {
             _repository = repository;
             _logger = logger;
@@ -26,6 +29,7 @@ namespace Application.Services
             _jwt = jwt;
             _smsSender = smsSender;
             _emailSender = emailSender;
+            _cache = cache;
         }
 
         public async Task<Civilian> Add(CivilianCreateInput dto)
@@ -55,10 +59,10 @@ namespace Application.Services
             try
             {
                 civilian.JoinedDate = DateTime.UtcNow;
-                civilian.CivilianStatusId = 3;
+                civilian.CivilianStatusId = 1;
                 await _repository.AddAsync(civilian);
                 await _repository.SaveAsync();
-                //await _smsSender.SendSmsAsync(civilian.PhoneNumber, "Welcome to ResQ! You’re now part of our emergency response network. We’re here 24/7. Stay safe!");
+                await _smsSender.SendSmsAsync(civilian.PhoneNumber, "Welcome to ResQ! You’re now part of our emergency response network. We’re here 24/7. Stay safe!");
                 await _emailSender.SendEmailAsync(civilian.Email, "Welcome to ResQ!", "You’re now part of our emergency response network. We’re here 24/7. Stay safe!");
                 _logger.LogInformation("Civilian created successfully: {Email}", civilian.Email);
             }
@@ -70,14 +74,40 @@ namespace Application.Services
             return civilian;
         }
 
-        public Task<string> Login(string phoneNumber, int otp)
+        public async Task<CivilianLogin> Login(string phoneNumber, int otp)
         {
-            throw new NotImplementedException();
+            var civilian = await _repository.GetByPhoneNumberAsync(phoneNumber);
+            if (civilian is null) throw new Exception("Account not found");
+
+            if (!_cache.TryGetValue<int>(OtpKey(phoneNumber), out var code))
+                throw new Exception("OTP expired or not requested");
+
+            if (code != otp) throw new Exception("Invalid OTP");
+
+            _cache.Remove(OtpKey(phoneNumber)); // one-time use
+
+            return new CivilianLogin
+            {
+                JwtToken = _jwt.GenerateToken(civilian.Id.ToString(), civilian.PhoneNumber, "Civilian"),
+                Civilian = civilian
+            };
         }
 
-        public Task<string> SendOTP(string phoneNumber)
+        private static string OtpKey(string phone) => $"otp:civilian:{phone}";
+
+        public async Task<bool> SendOTP(string phoneNumber)
         {
-            throw new NotImplementedException();
+            var civilian = await _repository.GetByPhoneNumberAsync(phoneNumber);
+            if (civilian is null) throw new Exception("Account not found");
+
+            var code = RandomNumberGenerator.GetInt32(1000, 10000);
+            _cache.Set(OtpKey(phoneNumber), code, TimeSpan.FromMinutes(5)); // expires in 5 min
+
+            await _smsSender.SendSmsAsync(phoneNumber, $"ResQ code: {code} (valid 5 min)");
+            if (!string.IsNullOrWhiteSpace(civilian.Email))
+                await _emailSender.SendEmailAsync(civilian.Email, "Your ResQ code", $"Code: {code} (valid 5 min)");
+
+            return true;
         }
 
         public async Task<Civilian> Update(int id, CivilianUpdateInput dto)
@@ -151,6 +181,34 @@ namespace Application.Services
             return true;
         }
 
-       
+        public async Task<bool> Restrict(int id)
+        {
+            var civilian = await _repository.GetByIdAsync(id);
+            if (civilian == null)
+            {
+                _logger.LogWarning("Civilian with ID {Id} not found", id);
+                return false;
+            }
+            civilian.IsRestrict = true;
+            await _repository.SaveAsync();
+            return true;
+        }
+
+        public async Task<bool> Unrestrict(int id)
+        {
+            var civilian = await _repository.GetByIdAsync(id);
+            if (civilian == null)
+            {
+                _logger.LogWarning("Civilian with ID {Id} not found", id);
+                return false;
+            }
+            civilian.IsRestrict = false;
+            await _repository.SaveAsync();
+            return true;
+        }
+
+        public IQueryable<Civilian> Query() =>
+            _repository.Query();
+
     }
 }

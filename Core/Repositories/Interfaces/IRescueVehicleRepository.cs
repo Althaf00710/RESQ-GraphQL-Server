@@ -8,5 +8,6 @@ namespace Core.Repositories.Interfaces
         Task<string> GetMaxVehicleCodeAsync();
         IQueryable<RescueVehicle> Query();
         Task<RescueVehicle?> GetByPlateNumberAsync(string plateNumber);
+        Task<bool> CheckPlateNumberExistAsync(string plateNumber, int? excludeId);
     }
 }

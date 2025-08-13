@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NetTopologySuite.Geometries;
 
 namespace Core.Models
 {
@@ -7,12 +8,15 @@ namespace Core.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public int CivilianId { get; set; }
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
-        public string Location { get; set; }
+        [Required]
+        [Column(TypeName = "geography")]
+        public Point Location { get; set; }
+        public string? Address { get; set; }
         public bool Active { get; set; }
-
+        public DateTime LastActive { get; set; } = DateTime.UtcNow;
+         
 
         [ForeignKey(nameof(CivilianId))]
         public Civilian Civilian { get; set; }

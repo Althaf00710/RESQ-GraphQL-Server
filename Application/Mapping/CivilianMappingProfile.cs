@@ -9,7 +9,8 @@ namespace Application.Mapping
         public CivilianMappingProfile()
         {
             CreateMap<CivilianCreateInput, Civilian>()
-                .ForMember(dest => dest.JoinedDate, opt => opt.MapFrom(_ => DateTime.Now));
+                .ForMember(dest => dest.JoinedDate, opt => opt.MapFrom(_ => DateTime.Now))
+                .ForMember(dest => dest.IsRestrict, opt => opt.MapFrom(_ => false));
         }
     }
 }

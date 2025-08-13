@@ -40,6 +40,10 @@ namespace Application.Services
                     _logger.LogWarning("Rescue vehicle category with ID {CategoryId} not found", dto.RescueVehicleCategoryId);
                     throw new Exception("Rescue vehicle category not found");
                 }
+                if (await CheckPlateNumberExist(dto.PlateNumber))
+                {
+                    throw new Exception("Number Plate Exist");
+                }
 
                 var vehicle = _mapper.Map<RescueVehicle>(dto);
                 vehicle.Code = await GenerateVehicleCode(category);
@@ -68,6 +72,10 @@ namespace Application.Services
                 {
                     throw new Exception($"Rescue vehicle with ID {id} not found");
                 }
+                if (await CheckPlateNumberExist(dto.PlateNumber, id))
+                {
+                    throw new Exception("Number Plate Exist");
+                }
 
                 _mapper.Map(dto, vehicle);
                 await _repository.SaveAsync();
@@ -80,6 +88,11 @@ namespace Application.Services
                 _logger.LogError(ex, "Error updating rescue vehicle with ID {VehicleId}", id);
                 throw;
             }
+        }
+
+        public async Task<bool> CheckPlateNumberExist(string plateNumber, int? excludeId=null)
+        {
+            return await _repository.CheckPlateNumberExistAsync(plateNumber, excludeId);
         }
 
         private async Task<string> GenerateVehicleCode(RescueVehicleCategory category)
@@ -150,5 +163,7 @@ namespace Application.Services
         {
             await _topicEventSender.SendAsync("VehicleStatusChanged", vehicle);
         }
+
+
     }
 }

@@ -10,10 +10,5 @@ namespace RESQserver_dotnet.Api.RescueVehicleLocationApi
         {
             return await service.GetAllAsync();
         }
-
-        public async Task<RescueVehicleLocation?> GetRescueVehicleLocationById(int id, [Service] IRescueVehicleLocationService service)
-        {
-            return await service.GetByRescueVehicleId(id);
-        }
     }
 }

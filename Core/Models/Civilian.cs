@@ -19,7 +19,8 @@ namespace Core.Models
         [Required]
         public string NicNumber { get; set; }
         public int CivilianStatusId { get; set; } // "Traffic Police", "Doctor"
-        public DateTime JoinedDate { get; set; }
+        public DateTime JoinedDate { get; set; } = DateTime.Now;
+        public bool IsRestrict { get; set; } = false; // Default to false, meaning not restricted
 
 
 

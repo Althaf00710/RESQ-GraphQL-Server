@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Design : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,11 +34,17 @@ namespace Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmergencyCategoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmergencyCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmergencyCategories_EmergencyCategories_EmergencyCategoryId",
+                        column: x => x.EmergencyCategoryId,
+                        principalTable: "EmergencyCategories",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -54,7 +61,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SnakeTypes",
+                name: "Snakes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -67,7 +74,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SnakeTypes", x => x.Id);
+                    table.PrimaryKey("PK_Snakes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,7 +107,8 @@ namespace Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NicNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CivilianStatusId = table.Column<int>(type: "int", nullable: false),
-                    JoinedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    JoinedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRestrict = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -217,10 +225,10 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CivilianId = table.Column<int>(type: "int", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
+                    Location = table.Column<Point>(type: "geography", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,12 +278,13 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CivilianId = table.Column<int>(type: "int", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    EmergencyCategoryId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<Point>(type: "geography", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    proofImage = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ProofImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -284,6 +293,12 @@ namespace Infrastructure.Migrations
                         name: "FK_RescueVehicleRequests_Civilians_CivilianId",
                         column: x => x.CivilianId,
                         principalTable: "Civilians",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RescueVehicleRequests_EmergencyCategories_EmergencyCategoryId",
+                        column: x => x.EmergencyCategoryId,
+                        principalTable: "EmergencyCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -317,10 +332,10 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RescueVehicleId = table.Column<int>(type: "int", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
+                    Location = table.Column<Point>(type: "geography", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -384,6 +399,11 @@ namespace Infrastructure.Migrations
                 column: "CivilianStatusId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmergencyCategories_EmergencyCategoryId",
+                table: "EmergencyCategories",
+                column: "EmergencyCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmergencySubCategories_EmergencyCategoryId",
                 table: "EmergencySubCategories",
                 column: "EmergencyCategoryId");
@@ -434,6 +454,11 @@ namespace Infrastructure.Migrations
                 column: "CivilianId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RescueVehicleRequests_EmergencyCategoryId",
+                table: "RescueVehicleRequests",
+                column: "EmergencyCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RescueVehicles_RescueVehicleCategoryId",
                 table: "RescueVehicles",
                 column: "RescueVehicleCategoryId");
@@ -464,7 +489,7 @@ namespace Infrastructure.Migrations
                 name: "RescueVehicleLocations");
 
             migrationBuilder.DropTable(
-                name: "SnakeTypes");
+                name: "Snakes");
 
             migrationBuilder.DropTable(
                 name: "Users");
@@ -479,10 +504,10 @@ namespace Infrastructure.Migrations
                 name: "RescueVehicles");
 
             migrationBuilder.DropTable(
-                name: "EmergencyCategories");
+                name: "Civilians");
 
             migrationBuilder.DropTable(
-                name: "Civilians");
+                name: "EmergencyCategories");
 
             migrationBuilder.DropTable(
                 name: "RescueVehicleCategories");

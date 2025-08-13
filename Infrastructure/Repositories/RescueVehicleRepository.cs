@@ -14,6 +14,16 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<bool> CheckPlateNumberExistAsync(string plateNumber, int? excludeId)
+        {
+            return await _context.RescueVehicles
+                .AsNoTracking()
+                .AnyAsync(rv =>
+                    rv.PlateNumber == plateNumber 
+                    && (!excludeId.HasValue || rv.Id != excludeId.Value)
+                );
+        }
+
         public async Task<RescueVehicle?> GetByPlateNumberAsync(string plateNumber)
         {
             return await _context.RescueVehicles

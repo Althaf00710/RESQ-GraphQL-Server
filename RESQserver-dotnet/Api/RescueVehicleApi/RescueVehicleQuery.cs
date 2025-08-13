@@ -26,10 +26,15 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
         [UsePaging(IncludeTotalCount = true)]
         [UseProjection]
         [UseFiltering]
-        public IQueryable<RescueVehicle> GetRescueVehicles([Service] IRescueVehicleService rescueVehicleService)
+        [UseSorting]
+        public IQueryable<RescueVehicle> GetRescueVehicles([Service] IRescueVehicleService service)
+            => service.Query();
+
+        public async Task<bool> CheckPlateNumberExist(string numberPlate, int? excludeId, [Service] IRescueVehicleService rescueVehicleService)
         {
-            return rescueVehicleService.Query();
+            return await rescueVehicleService.CheckPlateNumberExist(numberPlate, excludeId);
         }
+
     }
     
 }

@@ -32,6 +32,12 @@ namespace Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(
+                x => x.UseNetTopologySuite()
+            );
+        }
 
         public DbSet<Civilian> Civilians { get; set; }
         public DbSet<CivilianLocation> CivilianLocations { get; set; }

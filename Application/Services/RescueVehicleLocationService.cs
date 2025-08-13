@@ -1,105 +1,99 @@
-﻿using Application.Services.Generic;
+﻿// Application/Services/RescueVehicleLocationService.cs
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using Application.Services.Generic;
 using AutoMapper;
 using Core.DTO;
 using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
+using HotChocolate.Subscriptions;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Services
+public class RescueVehicleLocationService
+    : Service<RescueVehicleLocation>, IRescueVehicleLocationService
 {
-    public class RescueVehicleLocationService : Service<RescueVehicleLocation>, IRescueVehicleLocationService
+    // track whether we've persisted the “initial” record for each vehicle
+    private static readonly ConcurrentDictionary<int, bool> _hasInitial
+        = new();
+
+    // track last‐seen time for timeout detection
+    internal static readonly ConcurrentDictionary<int, DateTime> _lastSeen
+        = new();
+
+    private readonly IRescueVehicleLocationRepository _repository;
+    private readonly ILogger<RescueVehicleLocationService> _logger;
+    private readonly IMapper _mapper;
+    private readonly ITopicEventSender _sender;
+
+    public RescueVehicleLocationService(
+        IRescueVehicleLocationRepository repository,
+        ILogger<RescueVehicleLocationService> logger,
+        IMapper mapper,
+        ITopicEventSender sender
+    ) : base(repository)
     {
-        private readonly IRescueVehicleLocationRepository _repository;
-        private readonly ILogger<RescueVehicleLocationService> _logger;
-        private readonly IMapper _mapper;
-        public RescueVehicleLocationService(IRescueVehicleLocationRepository repository, ILogger<RescueVehicleLocationService> logger, IMapper mapper) : base(repository)
+        _repository = repository;
+        _logger = logger;
+        _mapper = mapper;
+        _sender = sender;
+    }
+
+    public async Task<RescueVehicleLocation> Handle(RescueVehicleLocationInput dto)
+    {
+        if (dto is null)
+            throw new ArgumentNullException(nameof(dto));
+
+        var now = DateTime.UtcNow;
+        _lastSeen.AddOrUpdate(dto.RescueVehicleId, now, (_, __) => now);
+
+        // FIRST‐ever update: persist it as the “initial” record
+        if (!_hasInitial.ContainsKey(dto.RescueVehicleId))
         {
-            _repository = repository;
-            _logger = logger;
-            _mapper = mapper;   
+            var entity = _mapper.Map<RescueVehicleLocation>(dto);
+            entity.Active = true;
+            await _repository.AddAsync(entity);
+            await _repository.SaveAsync();
+            _hasInitial[dto.RescueVehicleId] = true;
+
+            // broadcast
+            await _sender.SendAsync(
+              "VehicleLocationShare",
+              entity
+            );
+            return entity;
         }
 
-        public async Task<RescueVehicleLocation> GetByRescueVehicleId(int rescueVehicleId)
-        {
-            try
-            {
-                var location = await _repository.GetByRescueVehicleId(rescueVehicleId);
-                if (location == null)
-                {
-                    _logger.LogWarning("No location found for Rescue Vehicle {rescueVehicleId}", rescueVehicleId);
-                    throw new Exception($"Location for Rescue Vehicle {rescueVehicleId} not found");
-                }
-                return location;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting location for Rescue Vehicle {rescueVehicleId}", rescueVehicleId);
-                throw;
-            }
-        }
+        // Normal streaming update: just broadcast, DO NOT Save
+        var temp = _mapper.Map<RescueVehicleLocation>(dto);
+        temp.Active = true; // still active
+        await _sender.SendAsync(
+          "VehicleLocationShare",
+          temp
+        );
+        return temp;
+    }
 
-        public async Task<RescueVehicleLocation> Handle(RescueVehicleLocationInput dto)
-        {
-            try
-            {
-                if (dto == null)
-                {
-                    _logger.LogWarning("Received null DTO for Rescue Vehicle {RescueVehicleId}", dto.RescueVehicleId);
-                    throw new ArgumentNullException(nameof(dto), "DTO cannot be null");
-                }
+    /// <summary>
+    /// Called by a background monitor when a timeout is detected.
+    /// </summary>
+    public async Task MarkInactiveAsync(int rescueVehicleId)
+    {
+        var existing = await _repository.GetByRescueVehicleId(rescueVehicleId);
+        if (existing == null || !existing.Active) return;
 
-                var existing = await _repository.GetByRescueVehicleId(dto.RescueVehicleId);
+        existing.Active = false;
+        await _repository.SaveAsync();
 
-                if (existing != null)
-                    return await Update(dto.RescueVehicleId, dto);
-                return await Add(dto);
-                //summa oru try, Let's see if it's working or not
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding or updating location for Rescue Vehicle {RescueVehicleId}", dto.RescueVehicleId);
-                throw;
-            }
-        }
+        _logger.LogInformation(
+            "Marked vehicle {id} inactive after timeout", rescueVehicleId
+        );
 
-        private async Task<RescueVehicleLocation> Add(RescueVehicleLocationInput dto)
-        {
-            try
-            {
-                var entity = _mapper.Map<RescueVehicleLocation>(dto);
-                entity.Active = true;
-
-                await _repository.AddAsync(entity);
-                await _repository.SaveAsync();
-
-                _logger.LogInformation("Location created for Rescue Vehicle {RescueVehicleId}", dto.RescueVehicleId);
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating Rescue Vehicle location");
-                throw;
-            }
-        }
-
-        private async Task<RescueVehicleLocation> Update(int rescueVehicleId, RescueVehicleLocationInput dto)
-        {
-            try
-            {
-                var existing = await _repository.GetByRescueVehicleId(rescueVehicleId);
-
-                _mapper.Map(dto, existing);
-                await _repository.SaveAsync();
-
-                _logger.LogInformation("Location updated for Rescue Vehicle {RescueVehicleId}", rescueVehicleId);
-                return existing;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating location for Rescue Vehicle {RescueVehicleId}", rescueVehicleId);
-                throw;
-            }
-        }
+        // broadcast the “inactive” state
+        await _sender.SendAsync(
+          "VehicleLocationShare",
+          existing
+        );
     }
 }

@@ -10,5 +10,6 @@ namespace Core.Services.Interfaces
         Task<RescueVehicle> Update(int id, RescueVehicleUpdateInput dto);
         IQueryable<RescueVehicle> Query();
         Task<RescueVehicleLogin> Login(string plateNumber, string password);
+        Task<bool> CheckPlateNumberExist(string plateNumber, int? excludeId = null);
     }
 }

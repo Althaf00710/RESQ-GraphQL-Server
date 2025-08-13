@@ -44,6 +44,10 @@ namespace RESQserver_dotnet.Api.CivilianApi
                 .Field(c => c.CivilianStatusId)
                 .Type<NonNullType<IntType>>();
 
+            descriptor
+                .Field(c => c.IsRestrict)
+                .Type<NonNullType<BooleanType>>();
+
             descriptor.Field("civilianStatus")
                 .Type<CivilianStatusType>()
                 .Resolve(async ctx =>
@@ -53,35 +57,35 @@ namespace RESQserver_dotnet.Api.CivilianApi
                         .FirstOrDefaultAsync(s => s.Id == ctx.Parent<Civilian>().CivilianStatusId);
                 });
 
-            //descriptor.Field("civilianLocations")
-            //    .Type<ListType<CivilianLocationType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.CivilianLocations
-            //            .Where(l => l.CivilianId == ctx.Parent<Civilian>().Id)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field("civilianLocations")
+                .Type<ListType<CivilianLocationType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.CivilianLocations
+                        .Where(l => l.CivilianId == ctx.Parent<Civilian>().Id)
+                        .ToListAsync();
+                });
 
-            //descriptor.Field("rescueVehicleRequests")
-            //    .Type<ListType<RescueVehicleRequestType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.RescueVehicleRequests
-            //            .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field("rescueVehicleRequests")
+                .Type<ListType<RescueVehicleRequestType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.RescueVehicleRequests
+                        .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
+                        .ToListAsync();
+                });
 
-            //descriptor.Field("civilianTypeRequests")
-            //    .Type<ListType<CivilianStatusRequestType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.CivilianStatusRequests
-            //            .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field("civilianStatusRequests")
+                .Type<ListType<CivilianStatusRequestType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.CivilianStatusRequests
+                        .Where(r => r.CivilianId == ctx.Parent<Civilian>().Id)
+                        .ToListAsync();
+                });
         }
     }
 }

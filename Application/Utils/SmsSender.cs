@@ -11,14 +11,16 @@ namespace Application.Utils
     public class SmsSender
     {
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://app.text.lk/api/http/sms/send";
+        private readonly string _apiUrl;
         private readonly string _apiToken;
-        private readonly string _senderId = "TextLKDemo";
+        private readonly string _senderId;
 
         public SmsSender(HttpClient httpClinet, IConfiguration configuration)
         {
             _httpClient = httpClinet;
             _apiToken = configuration["ApiKey:SmsSender"];
+            _apiUrl = configuration["SmsGateway:SenderUri"];
+            _senderId = configuration["SmsGateway:SenderId"];
         }
 
         public async Task<bool> SendSmsAsync(string phoneNumber, string message)
@@ -29,13 +31,13 @@ namespace Application.Utils
                 recipient = phoneNumber,
                 sender_id = _senderId,
                 type = "plain",
-                message = message
+                message
             };
 
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl);
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiUrl);
             request.Headers.Accept.Add(new("application/json"));
             request.Content = content;
 

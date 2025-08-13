@@ -33,5 +33,8 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(c => c.PhoneNumber == phoneNumber);
         }
 
+        public IQueryable<Civilian> Query() =>
+            _context.Civilians.AsNoTracking();
+
     }
 }

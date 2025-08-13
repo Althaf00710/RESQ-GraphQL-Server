@@ -4,6 +4,8 @@ using Infrastructure.Data;
 using Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NetTopologySuite.Geometries;
+using NetTopologySuite;
 using RESQserver_dotnet.Api;
 using RESQserver_dotnet.Api.CivilianApi;
 using RESQserver_dotnet.Api.CivilianLocationApi;
@@ -25,11 +27,25 @@ using RESQserver_dotnet.Api.UserApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>
-    (options => options.UseSqlServer(builder.Configuration.GetConnectionString("ResqDB"), sql => sql.MigrationsAssembly("Infrastructure")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("ResqDB"),
+        sql =>
+        {
+            sql.MigrationsAssembly("Infrastructure");
+            sql.UseNetTopologySuite();
+        }
+    )
+);
+
+builder.Services.AddSingleton<GeometryFactory>(
+    NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326)
+);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+
+builder.Services.AddMemoryCache();
 
 //var config = builder.Configuration;
 
@@ -59,14 +75,23 @@ builder.Services.AddInfrastructure();
 
 //builder.Services.AddAuthorization();
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowLocalhost3000",
+//        policy => policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "https://rotten-eyes-bathe.loca.lt")
+//                        .AllowAnyHeader()
+//                        .AllowAnyMethod());
+//});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost3000",
-        policy => policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    );
 });
-
 
 
 builder.Services
@@ -76,6 +101,7 @@ builder.Services
     .AddProjections()
     .AddInMemorySubscriptions()
     .ModifyCostOptions(o => o.EnforceCostLimits = false)
+    .AddSpatialTypes()
 
     .AddQueryType<RESQserver_dotnet.Api.Query>()
     .AddTypeExtension<UserQuery>()
@@ -115,6 +141,7 @@ builder.Services
 
     .AddSubscriptionType<Subscription>()
     .AddTypeExtension<RescueVehicleSubscription>()
+    .AddTypeExtension<RescueVehicleLocationSubscription>()
 
     .AddType<UserType>()
     .AddType<CivilianStatusType>()
@@ -142,6 +169,6 @@ app.UseWebSockets();
 
 app.MapGraphQL();
 
-app.UseCors("AllowLocalhost3000");
+app.UseCors("AllowAll");
 
 app.Run();

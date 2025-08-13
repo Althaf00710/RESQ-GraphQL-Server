@@ -2,8 +2,8 @@
 using HotChocolate.Types;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using RESQserver_dotnet.Api.RescueVehicleApi;
-using System.Threading.Tasks;
 
 namespace RESQserver_dotnet.Api.RescueVehicleLocationApi
 {
@@ -11,44 +11,58 @@ namespace RESQserver_dotnet.Api.RescueVehicleLocationApi
     {
         protected override void Configure(IObjectTypeDescriptor<RescueVehicleLocation> descriptor)
         {
-            descriptor.Description("Represents a rescue vehicle's location in the emergency response system");
+            descriptor.Description("Represents a rescue vehicle's geo‐location and address.");
 
-            // Configure scalar fields
+            descriptor.Ignore(rvl => rvl.Location);
+
             descriptor.Field(rvl => rvl.Id)
-                .Description("The unique identifier of the location record")
-                .Type<NonNullType<IdType>>();
+                .Type<NonNullType<IdType>>()
+                .Description("Primary key of the location record.");
 
             descriptor.Field(rvl => rvl.RescueVehicleId)
-                .Description("The ID of the rescue vehicle this location belongs to")
-                .Type<NonNullType<IntType>>();
+                .Type<NonNullType<IntType>>()
+                .Description("FK to the rescue vehicle.");
 
-            descriptor.Field(rvl => rvl.Longitude)
-                .Description("The longitude coordinate of the location")
-                .Type<NonNullType<FloatType>>();
-
-            descriptor.Field(rvl => rvl.Latitude)
-                .Description("The latitude coordinate of the location")
-                .Type<NonNullType<FloatType>>();
-
-            descriptor.Field(rvl => rvl.Location)
-                .Description("Human-readable address or location description")
-                .Type<NonNullType<StringType>>();
+            descriptor.Field(rvl => rvl.Address)
+                .Type<NonNullType<StringType>>()
+                .Description("Human‐readable address or description.");
 
             descriptor.Field(rvl => rvl.Active)
-                .Description("Whether this is the vehicle's current active location")
-                .Type<NonNullType<BooleanType>>();
+                .Type<NonNullType<BooleanType>>()
+                .Description("Whether this is the vehicle's current active location.");
 
-            // Configure navigation property with resolver
+            descriptor.Field(rvl => rvl.LastActive)
+                .Type<NonNullType<DateTimeType>>()
+                .Description("UTC timestamp when this location was last active.");
+
+            // Expose the Point as latitude & longitude
+            descriptor.Field("latitude")
+                .Type<NonNullType<FloatType>>()
+                .Description("Latitude (Y) of the Point.")
+                .Resolve(ctx => ((Point)ctx.Parent<RescueVehicleLocation>().Location).Y);
+
+            descriptor.Field("longitude")
+                .Type<NonNullType<FloatType>>()
+                .Description("Longitude (X) of the Point.")
+                .Resolve(ctx => ((Point)ctx.Parent<RescueVehicleLocation>().Location).X);
+
+            // Navigation
             descriptor.Field(rvl => rvl.RescueVehicle)
-                .Description("The rescue vehicle associated with this location")
-                .Type<RescueVehicleType>()
-                .Resolve(async ctx =>
-                {
-                    var db = ctx.Service<AppDbContext>();
-                    return await db.RescueVehicles
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(v => v.Id == ctx.Parent<RescueVehicleLocation>().RescueVehicleId);
-                });
+                .Type<NonNullType<RescueVehicleType>>()
+                .Description("The associated rescue vehicle.")
+                .ResolveWith<Resolvers>(r => r.GetVehicleAsync(default!, default!));
+        }
+
+        private class Resolvers
+        {
+            public async Task<RescueVehicle> GetVehicleAsync(
+                [Parent] RescueVehicleLocation loc,
+                [Service] AppDbContext db)
+            {
+                return await db.RescueVehicles
+                    .AsNoTracking()
+                    .FirstAsync(rv => rv.Id == loc.RescueVehicleId);
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Core.DTO
         public int RescueVehicleId { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        public string location { get; set; }
+        public string Address { get; set; }
     }
 
     public class RescueVehicleLocationStatusInput

@@ -35,21 +35,72 @@ namespace RESQserver_dotnet.Api.CivilianApi
             }
         }
 
-        public async Task<CivilianPayload> DeleteCivilian(
+        public async Task<CivilianPayload> RestrictCivilian(
             int id,
             [Service] ICivilianService service)
         {
             try
             {
-                var deleted = await service.Delete(id);
+                var deleted = await service.Restrict(id);
                 if (!deleted)
                     return new CivilianPayload(false, $"Civilian with ID {id} not found");
 
-                return new CivilianPayload(true, "Civilian deleted successfully");
+                return new CivilianPayload(true, "Civilian Restricted successfully");
             }
             catch (Exception ex)
             {
-                return new CivilianPayload(false, $"Failed to delete civilian: {ex.Message}");
+                return new CivilianPayload(false, $"Failed to restrict civilian: {ex.Message}");
+            }
+        }
+
+        public async Task<CivilianPayload> UnrestrictCivilian(
+            int id,
+            [Service] ICivilianService service)
+        {
+            try
+            {
+                var deleted = await service.Unrestrict(id);
+                if (!deleted)
+                    return new CivilianPayload(false, $"Civilian with ID {id} not found");
+
+                return new CivilianPayload(true, "Civilian Unrestricted successfully");
+            }
+            catch (Exception ex)
+            {
+                return new CivilianPayload(false, $"Failed to Unrestrict civilian: {ex.Message}");
+            }
+        }
+
+        public async Task<CivilianPayload> SendCivilianOtp(
+            string phoneNumber,
+            [Service] ICivilianService service)
+        {
+            try
+            {
+                var sent = await service.SendOTP(phoneNumber);
+                if (!sent)
+                    return new CivilianPayload(false, "Failed to send OTP");
+                return new CivilianPayload(true, "OTP sent successfully");
+            }
+            catch (Exception ex)
+            {
+                return new CivilianPayload(false, $"Failed to send OTP: {ex.Message}");
+            }
+        }
+
+        public async Task<CivilianPayload> LoginCivilian(
+            string phoneNumber,
+            int otp,
+            [Service] ICivilianService service)
+        {
+            try
+            {
+                var login = await service.Login(phoneNumber, otp);
+                return new CivilianPayload(true, login.JwtToken, login.Civilian);
+            }
+            catch (Exception ex)
+            {
+                return new CivilianPayload(false, $"Login failed: {ex.Message}");
             }
         }
     }

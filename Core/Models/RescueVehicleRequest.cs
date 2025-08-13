@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Models;
+using NetTopologySuite.Geometries;
 
 namespace Core.Models
 {
@@ -13,17 +14,19 @@ namespace Core.Models
         public int EmergencyCategoryId { get; set; }
         public string? Description { get; set; }
         [Required]
-        public string Location { get; set; }
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
+        public string Address { get; set; }
+        [Column(TypeName = "geography")]
+        [Required]
+        public Point Location {  get; set; }
         public string Status { get; set; }
         public string? ProofImageURL { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
+        [ForeignKey(nameof(EmergencyCategoryId))]
+        public EmergencyCategory EmergencyCategory { get; set; }
 
         [ForeignKey(nameof(CivilianId))]
-        public EmergencyCategory EmergencyCategory { get; set; }
         public Civilian Civilian { get; set; }
         public ICollection<RescueVehicleAssignment> RescueVehicleAssignments { get; set; }
     }

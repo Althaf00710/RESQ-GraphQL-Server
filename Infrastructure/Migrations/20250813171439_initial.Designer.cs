@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250618193241_Design")]
-    partial class Design
+    [Migration("20250813171439_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +40,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRestrict")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("JoinedDate")
                         .HasColumnType("datetime2");
@@ -73,18 +77,18 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CivilianId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Location")
+                    b.Property<Point>("Location")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                        .HasColumnType("geography");
 
                     b.HasKey("Id");
 
@@ -162,6 +166,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EmergencyCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Icon")
                         .HasColumnType("nvarchar(max)");
 
@@ -170,6 +177,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmergencyCategoryId");
 
                     b.ToTable("EmergencyCategories");
                 });
@@ -374,15 +383,15 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
+                    b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Point>("Location")
+                        .IsRequired()
+                        .HasColumnType("geography");
 
                     b.Property<int>("RescueVehicleId")
                         .HasColumnType("int");
@@ -402,28 +411,30 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CivilianId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Location")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                    b.Property<int>("EmergencyCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Reason")
+                    b.Property<Point>("Location")
                         .IsRequired()
+                        .HasColumnType("geography");
+
+                    b.Property<string>("ProofImageURL")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("proofImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -431,10 +442,12 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CivilianId");
 
+                    b.HasIndex("EmergencyCategoryId");
+
                     b.ToTable("RescueVehicleRequests");
                 });
 
-            modelBuilder.Entity("Core.Models.SnakeType", b =>
+            modelBuilder.Entity("Core.Models.Snake", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -464,7 +477,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SnakeTypes");
+                    b.ToTable("Snakes");
                 });
 
             modelBuilder.Entity("Core.Models.User", b =>
@@ -546,10 +559,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("CivilianStatus");
                 });
 
+            modelBuilder.Entity("Core.Models.EmergencyCategory", b =>
+                {
+                    b.HasOne("Core.Models.EmergencyCategory", null)
+                        .WithMany("EmergencyCategories")
+                        .HasForeignKey("EmergencyCategoryId");
+                });
+
             modelBuilder.Entity("Core.Models.EmergencySubCategory", b =>
                 {
                     b.HasOne("Core.Models.EmergencyCategory", "EmergencyCategory")
-                        .WithMany()
+                        .WithMany("EmergencySubCategories")
                         .HasForeignKey("EmergencyCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -655,7 +675,15 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Core.Models.EmergencyCategory", "EmergencyCategory")
+                        .WithMany()
+                        .HasForeignKey("EmergencyCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Civilian");
+
+                    b.Navigation("EmergencyCategory");
                 });
 
             modelBuilder.Entity("Core.Models.Civilian", b =>
@@ -678,6 +706,10 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Models.EmergencyCategory", b =>
                 {
+                    b.Navigation("EmergencyCategories");
+
+                    b.Navigation("EmergencySubCategories");
+
                     b.Navigation("EmergencyToCivilians");
 
                     b.Navigation("EmergencyToVehicles");

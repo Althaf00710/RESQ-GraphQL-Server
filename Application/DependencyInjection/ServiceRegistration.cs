@@ -34,8 +34,11 @@ namespace Application.DependencyInjection
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<JwtTokenGenerator>();
+
             services.AddHttpClient<SmsSender>();
             services.AddScoped<EmailSender>();
+
+            services.AddHostedService<LocationTimeoutMonitor>();
 
             return services;
         }

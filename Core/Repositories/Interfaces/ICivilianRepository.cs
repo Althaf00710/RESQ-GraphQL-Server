@@ -8,5 +8,6 @@ namespace Core.Repositories.Interfaces
         Task<Civilian?> GetByPhoneNumberAsync(string phoneNumber);
         Task<Civilian?> GetByEmailAsync(string email);
         Task<Civilian?> GetByNICAsync(string nic);
+        IQueryable<Civilian> Query();
     }
 }

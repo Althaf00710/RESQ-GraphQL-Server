@@ -6,9 +6,13 @@ namespace RESQserver_dotnet.Api.CivilianApi
     [ExtendObjectType<Query>]
     public class CivilianQuery
     {
-        public async Task<IEnumerable<Civilian>> GetCivilians([Service] ICivilianService service)
+        [UsePaging(IncludeTotalCount = true)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<Civilian> GetCivilians([Service] ICivilianService service)
         {
-            return await service.GetAllAsync();
+            return service.Query();
         }
 
         public async Task<Civilian?> GetCivilianById(int id, [Service] ICivilianService service)
