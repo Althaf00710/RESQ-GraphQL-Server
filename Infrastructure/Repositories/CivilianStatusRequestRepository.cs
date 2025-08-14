@@ -2,6 +2,7 @@
 using Core.Repositories.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -13,5 +14,8 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public IQueryable<CivilianStatusRequest> Query() =>
+            _context.CivilianStatusRequests.AsNoTracking();
     }
 }

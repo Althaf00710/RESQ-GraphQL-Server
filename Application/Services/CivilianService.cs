@@ -177,7 +177,9 @@ namespace Application.Services
             }
 
             civilian.CivilianStatusId = civilianStatusId;
-            _repository.SaveAsync();
+            await _repository.SaveAsync();
+            await _smsSender.SendSmsAsync(civilian.PhoneNumber, $"Your Civilian Status has been updated. Thank You for contributing with us. -RESQ Team");
+            await _emailSender.SendEmailAsync(civilian.Email, "RESQ Civilian Status Updated", "Your Civilian Status has been updated. Thank You for contributing with us.");
             return true;
         }
 
@@ -190,6 +192,8 @@ namespace Application.Services
                 return false;
             }
             civilian.IsRestrict = true;
+            await _smsSender.SendSmsAsync(civilian.PhoneNumber, "Your account has been restricted. You can no longer access certain features.");
+            await _emailSender.SendEmailAsync(civilian.Email, "RESQ Account Restricted", "Your account has been restricted. You can no longer access certain features.");
             await _repository.SaveAsync();
             return true;
         }
@@ -203,6 +207,8 @@ namespace Application.Services
                 return false;
             }
             civilian.IsRestrict = false;
+            await _smsSender.SendSmsAsync(civilian.PhoneNumber, "Your account has been unrestricted. You can now access all features.");
+            await _emailSender.SendEmailAsync(civilian.Email, "RESQ Account Unrestricted", "Your account has been unrestricted. You can now access all features.");
             await _repository.SaveAsync();
             return true;
         }

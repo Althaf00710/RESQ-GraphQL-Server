@@ -16,11 +16,14 @@ namespace Application.Services
         private readonly ILogger<CivilianStatusRequestService> _logger;
         private readonly IMapper _mapper;
         private readonly ICivilianService _civilianService;
+        private readonly SmsSender _smsSender;
+        private readonly EmailSender _emailSender;
 
         public CivilianStatusRequestService(ICivilianStatusRequestRepository repository, 
             ILogger<CivilianStatusRequestService> logger, 
             IMapper mapper, 
-            JwtTokenGenerator jwt, 
+            JwtTokenGenerator jwt,
+            SmsSender smsSender, EmailSender emailSender,
             ICivilianService civilianService)
             : base(repository)
         {
@@ -28,9 +31,11 @@ namespace Application.Services
             _logger = logger;
             _mapper = mapper;
             _civilianService = civilianService;
+            _smsSender = smsSender;
+            _emailSender = emailSender;
         }
 
-        public async Task<CivilianStatusRequest> Add(CivilianStatusRequestCreateInput dto, IFile? proofPicture)
+        public async Task<CivilianStatusRequest> Add(CivilianStatusRequestCreateInput dto, IFile proofPicture)
         {
             _logger.LogInformation("Attempting to add CivilianStatusRequest for CivilianId: {CivilianId}", dto.CivilianId);
 
@@ -72,6 +77,11 @@ namespace Application.Services
             return request;
         }
 
+        public IQueryable<CivilianStatusRequest> Query()
+        {
+            return _repository.Query();
+        }
+
         public async Task<CivilianStatusRequest> Update(int id, CivilianStatusRequestUpdateInput dto)
         {
             _logger.LogInformation("Attempting to update CivilianStatusRequest ID: {Id}", id);
@@ -91,14 +101,16 @@ namespace Application.Services
             }
 
             request.status = dto.Status;
-            request.UpdatedAt = DateTime.UtcNow;
+            request.UpdatedAt = DateTime.Now;
 
             try
             {
                 await _repository.Update(request);
                 await _repository.SaveAsync();
 
-                _civilianService.updateCivilianStatus(request.CivilianId, request.CivilianStatusId);
+                if (dto.Status == "Approved")
+                    await _civilianService.updateCivilianStatus(request.CivilianId, request.CivilianStatusId);
+
                 _logger.LogInformation("CivilianStatusRequest ID: {Id} updated successfully", id);
             }
             catch (Exception ex)

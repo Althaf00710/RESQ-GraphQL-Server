@@ -5,5 +5,6 @@ namespace Core.Repositories.Interfaces
 {
     public interface ICivilianStatusRequestRepository : IRepository<CivilianStatusRequest>
     {
+        IQueryable<CivilianStatusRequest> Query();
     }
 }

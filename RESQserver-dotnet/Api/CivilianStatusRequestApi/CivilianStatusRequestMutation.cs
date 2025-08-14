@@ -10,7 +10,7 @@ namespace RESQserver_dotnet.Api.CivilianStatusRequestApi
     {
         public async Task<CivilianStatusRequestPayload> CreateCivilianStatusRequest(
             CivilianStatusRequestCreateInput input,
-            IFile? proofPicture,
+            IFile proofPicture,
             [Service] ICivilianStatusRequestService service)
         {
             try

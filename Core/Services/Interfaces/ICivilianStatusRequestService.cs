@@ -8,5 +8,6 @@ namespace Core.Services.Interfaces
     {
         Task<CivilianStatusRequest> Add(CivilianStatusRequestCreateInput dto, IFile? proofPicture);
         Task<CivilianStatusRequest> Update(int id, CivilianStatusRequestUpdateInput dto);
+        IQueryable<CivilianStatusRequest> Query();
     }
 }
