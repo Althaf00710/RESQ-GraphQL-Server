@@ -38,6 +38,8 @@ namespace Application.DependencyInjection
             services.AddHttpClient<SmsSender>();
             services.AddScoped<EmailSender>();
 
+            services.AddHttpClient<SnakePredictor>();
+
             services.AddHostedService<LocationTimeoutMonitor>();
 
             return services;

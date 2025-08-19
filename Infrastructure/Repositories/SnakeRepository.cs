@@ -25,6 +25,13 @@ namespace Infrastructure.Repositories
             return await _context.Snakes
                 .AnyAsync(s => s.ScientificName.Trim().ToLower() == normalizedScientificName);
         }
+
+        public async Task<Snake?> GetByScientificNameAsync(string scientificName)
+        {
+            var normalizedScientificName = scientificName.Trim().ToLower();
+            return await _context.Snakes
+                .FirstOrDefaultAsync(s => s.ScientificName.Trim().ToLower() == normalizedScientificName);
+        }
     }
     
 }

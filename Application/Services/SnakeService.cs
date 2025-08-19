@@ -11,6 +11,7 @@ using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
 using HotChocolate.Types;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services
@@ -20,12 +21,16 @@ namespace Application.Services
         private readonly ISnakeRepository _repository;
         private readonly ILogger<Snake> _logger;
         private readonly IMapper _mapper;
+        private readonly SnakePredictor _predictor;
+        private readonly string _serverBaseUri;
 
-        public SnakeService(ISnakeRepository repository, ILogger<Snake> logger, IMapper mapper) : base(repository)
+        public SnakeService(ISnakeRepository repository, ILogger<Snake> logger, IMapper mapper, SnakePredictor predictor, IConfiguration configuration) : base(repository)
         {
             _repository = repository;
             _logger = logger;
-            _mapper = mapper;   
+            _mapper = mapper;
+            _predictor = predictor;
+            _serverBaseUri = configuration["Server:Uri"];
         }
 
         public async Task<Snake> Add(SnakeCreateInput dto, IFile? picture)
@@ -140,6 +145,57 @@ namespace Application.Services
                 _logger.LogError(ex, "Error checking existence of snake with scientific name: {ScientificName}", scientificName);
                 throw;
             }
+        }
+
+        public async Task<SnakePredicted> SnakePredictor(IFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                _logger.LogWarning("SnakePredictor called with null or empty file");
+                throw new ArgumentException("File cannot be null or empty", nameof(file));
+            }
+            try
+            {
+                var storedPath = await FileHandler.StoreImage("snake-predictor", file);
+                _logger.LogInformation("Stored image for prediction at: {ImageUrl}", storedPath);
+
+                var imageUrl = BuildPublicImageUrl(_serverBaseUri, storedPath);
+
+                _logger.LogInformation("Public image URL for prediction: {ImageUrl}", imageUrl);
+
+                var prediction = await _predictor.PredictAsync(imageUrl);
+
+                var snake = await _repository.GetByScientificNameAsync(prediction.Label);
+
+                if (snake == null)
+                {
+                    _logger.LogWarning("No snake found for predicted label: {Label}", prediction.Label);
+                    throw new Exception($"No snake found for predicted label: {prediction.Label}");
+                }
+
+                return new SnakePredicted
+                {
+                    Snake = snake,
+                    Prob = prediction.Prob
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during snake prediction");
+                throw new ApplicationException("Failed to predict snake species", ex);
+            }
+        }
+
+        private static string BuildPublicImageUrl(string serverBase, string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return path;
+
+            if (Uri.TryCreate(path, UriKind.Absolute, out _)) return path;
+
+            var baseUrl = serverBase.TrimEnd('/');
+            var rel = path.Replace("\\", "/").TrimStart('/');
+
+            return $"{baseUrl}/{rel}";
         }
     }
 }

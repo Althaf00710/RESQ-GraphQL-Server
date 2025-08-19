@@ -13,5 +13,6 @@ namespace Core.Services.Interfaces
     {
         Task<Snake> Add(SnakeCreateInput dto, IFile? picture);
         Task<Snake> Update(int id, SnakeUpdateInput dto, IFile? picture);
+        Task<SnakePredicted> SnakePredictor(IFile file);
     }
 }

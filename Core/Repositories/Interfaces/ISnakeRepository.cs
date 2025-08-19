@@ -11,5 +11,6 @@ namespace Core.Repositories.Interfaces
     public interface ISnakeRepository : IRepository<Snake>
     {
         Task<bool> CheckExist(string scientificName);
+        Task<Snake?> GetByScientificNameAsync(string scientificName);
     }
 }
