@@ -12,6 +12,7 @@ namespace Core.Repositories.Interfaces
     {
         Task<bool> ExistAsync(string subCategory, int categoryId, int? excludeId = null);
         Task<List<EmergencySubCategory>> GetByCategoryIdAsync(int categoryId);
+        Task<List<EmergencySubCategory>> GetWithoutFirstAidDetails();
 
     }
 }

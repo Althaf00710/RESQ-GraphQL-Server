@@ -40,6 +40,16 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<EmergencySubCategory>> GetWithoutFirstAidDetails()
+        {
+            return await _context.EmergencySubCategories
+                .AsNoTracking()
+                .Where(esc => esc.EmergencyCategoryId == 1)       // medical
+                .Where(esc => !esc.FirstAidDetails.Any())         
+                .OrderBy(esc => esc.Name)
+                .ToListAsync();
+        }
+
 
     }
 }

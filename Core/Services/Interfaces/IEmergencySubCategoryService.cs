@@ -10,6 +10,7 @@ namespace Core.Services.Interfaces
         Task<EmergencySubCategory> Update(int id, EmergencySubCategoryUpdateInput dto, IFile? image);
         Task<List<EmergencySubCategory>> GetByCategoryIdAsync(int categoryId);
         Task<bool> CheckExist(string name, int categoryId, int? excludeId = null);
+        Task<List<EmergencySubCategory>> GetWithoutFirstAidDetails();
 
     }
 }

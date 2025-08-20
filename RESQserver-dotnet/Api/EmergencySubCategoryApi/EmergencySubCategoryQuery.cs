@@ -25,5 +25,10 @@ namespace RESQserver_dotnet.Api.EmergencySubCategoryApi
         {
             return await service.CheckExist(name, categoryId, excludeId);
         }
+
+        public async Task<List<EmergencySubCategory>> GetEmergencySubCategoryWithoutFirstAid([Service] IEmergencySubCategoryService service)
+        {
+            return await service.GetWithoutFirstAidDetails();
+        }
     }
 }

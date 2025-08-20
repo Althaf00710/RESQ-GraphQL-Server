@@ -68,6 +68,11 @@ namespace Application.Services
             return await _repository.ExistAsync(name, categoryId, excludeId);
         } 
 
+        public async Task<List<EmergencySubCategory>> GetWithoutFirstAidDetails()
+        {
+            return await _repository.GetWithoutFirstAidDetails();
+        }
+
         private async Task Validate(string name, int categoryId, int? excludeId = null)
         {
             if (await CheckExist(name, categoryId, excludeId))
