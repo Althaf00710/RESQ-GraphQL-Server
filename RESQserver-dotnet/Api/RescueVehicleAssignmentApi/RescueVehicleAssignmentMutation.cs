@@ -1,4 +1,5 @@
-﻿using Core.DTO;
+﻿using Application.Utils.AssignmentOffer;
+using Core.DTO;
 using Core.Services.Interfaces;
 
 namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
@@ -55,6 +56,18 @@ namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
             {
                 return new RescueVehicleAssignmentPayload(false, ex.Message);
             }
+        }
+
+        public async Task<RescueVehicleAssignmentPayload> RespondToAssignment(
+            VehicleAssignmentResponseInput input,
+            [Service] IAssignmentQueue queue)
+        {
+            await queue.NotifyResponseAsync(input.RequestId, input.VehicleId, input.Accepted);
+            return new RescueVehicleAssignmentPayload
+            (
+                true,
+                input.Accepted ? "Accepted" : "Declined/Timed out"
+            );
         }
     }
 }

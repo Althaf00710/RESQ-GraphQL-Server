@@ -1,5 +1,6 @@
 ﻿using Core.Models;
 using Infrastructure.Data;
+using NetTopologySuite.Geometries;
 using Microsoft.EntityFrameworkCore;
 
 namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
@@ -28,19 +29,26 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
             // Latitude / Longitude derived from NetTopologySuite Point (SRID 4326)
             descriptor.Field("longitude")
                 .Description("Geographic longitude coordinate (from Location.X)")
-                .Type<NonNullType<FloatType>>()
-                .Resolve(ctx => ctx.Parent<RescueVehicleRequest>().Location.X);
+                .Type<FloatType>() // nullable
+                .Resolve(ctx =>
+                {
+                    var p = ctx.Parent<RescueVehicleRequest>().Location as Point;
+                    return (double?)p?.X; // X = lon
+                });
 
             descriptor.Field("latitude")
                 .Description("Geographic latitude coordinate (from Location.Y)")
-                .Type<NonNullType<FloatType>>()
-                .Resolve(ctx => ctx.Parent<RescueVehicleRequest>().Location.Y);
+                .Type<FloatType>() // nullable
+                .Resolve(ctx =>
+                {
+                    var p = ctx.Parent<RescueVehicleRequest>().Location as Point;
+                    return (double?)p?.Y; // Y = lat
+                });
 
-            // (Optional) Raw WKT for debugging/interop
             descriptor.Field("locationWkt")
                 .Description("WKT representation of the location point (SRID 4326)")
-                .Type<NonNullType<StringType>>()
-                .Resolve(ctx => ctx.Parent<RescueVehicleRequest>().Location.AsText());
+                .Type<StringType>() // nullable
+                .Resolve(ctx => ctx.Parent<RescueVehicleRequest>().Location?.AsText());
 
             // Timestamps
             descriptor.Field(r => r.CreatedAt)
@@ -57,10 +65,10 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
                 .Type<StringType>();
 
             // Relationships
-            descriptor.Field(r => r.EmergencyCategory)
+            descriptor.Field(r => r.EmergencySubCategory)
                 .Description("The category of emergency")
-                .Type<EmergencyCategoryApi.EmergencyCategoryType>()
-                .ResolveWith<Resolvers>(r => r.GetEmergencyCategory(default!, default!));
+                .Type<EmergencySubCategoryApi.EmergencySubCategoryType>()
+                .ResolveWith<Resolvers>(r => r.GetEmergencySubCategory(default!, default!));
 
             descriptor.Field(r => r.Civilian)
                 .Description("The civilian who made the request")
@@ -83,11 +91,11 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
 
         private class Resolvers
         {
-            public async Task<EmergencyCategory> GetEmergencyCategory(
+            public async Task<EmergencySubCategory> GetEmergencySubCategory(
                 [Parent] RescueVehicleRequest request,
                 [Service] AppDbContext dbContext) =>
-                await dbContext.EmergencyCategories
-                    .FirstOrDefaultAsync(e => e.Id == request.EmergencyCategoryId);
+                await dbContext.EmergencySubCategories
+                    .FirstOrDefaultAsync(e => e.Id == request.EmergencySubCategoryId);
 
             public async Task<Civilian> GetCivilian(
                 [Parent] RescueVehicleRequest request,

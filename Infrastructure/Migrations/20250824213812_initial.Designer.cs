@@ -13,7 +13,7 @@ using NetTopologySuite.Geometries;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250813171439_initial")]
+    [Migration("20250824213812_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -424,7 +424,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmergencyCategoryId")
+                    b.Property<int>("EmergencySubCategoryId")
                         .HasColumnType("int");
 
                     b.Property<Point>("Location")
@@ -442,7 +442,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CivilianId");
 
-                    b.HasIndex("EmergencyCategoryId");
+                    b.HasIndex("EmergencySubCategoryId");
 
                     b.ToTable("RescueVehicleRequests");
                 });
@@ -675,15 +675,15 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Models.EmergencyCategory", "EmergencyCategory")
-                        .WithMany()
-                        .HasForeignKey("EmergencyCategoryId")
+                    b.HasOne("Core.Models.EmergencySubCategory", "EmergencySubCategory")
+                        .WithMany("RescueVehicleRequests")
+                        .HasForeignKey("EmergencySubCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Civilian");
 
-                    b.Navigation("EmergencyCategory");
+                    b.Navigation("EmergencySubCategory");
                 });
 
             modelBuilder.Entity("Core.Models.Civilian", b =>
@@ -718,6 +718,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Models.EmergencySubCategory", b =>
                 {
                     b.Navigation("FirstAidDetails");
+
+                    b.Navigation("RescueVehicleRequests");
                 });
 
             modelBuilder.Entity("Core.Models.RescueVehicle", b =>

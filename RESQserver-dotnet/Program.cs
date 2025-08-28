@@ -142,6 +142,8 @@ builder.Services
     .AddSubscriptionType<Subscription>()
     .AddTypeExtension<RescueVehicleSubscription>()
     .AddTypeExtension<RescueVehicleLocationSubscription>()
+    .AddTypeExtension<RescueVehicleRequestSubscription>()
+    .AddTypeExtension<RescueVehicleAssignmentSubscription>()
 
     .AddType<UserType>()
     .AddType<CivilianStatusType>()

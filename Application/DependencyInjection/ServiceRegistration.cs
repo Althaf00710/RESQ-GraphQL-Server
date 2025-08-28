@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Application.Services;
 using Application.Utils;
+using Application.Utils.AssignmentOffer;
 using Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,6 +42,8 @@ namespace Application.DependencyInjection
             services.AddHttpClient<SnakePredictor>();
 
             services.AddHostedService<LocationTimeoutMonitor>();
+
+            services.AddSingleton<IAssignmentQueue, AssignmentQueue>();
 
             return services;
         }

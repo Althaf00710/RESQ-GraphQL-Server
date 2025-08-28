@@ -15,5 +15,13 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
         {
             return await service.GetByIdAsync(id);
         }
+
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<RescueVehicleRequest> GetVehicleRequestPaging([Service] IRescueVehicleRequestService service)
+        {
+            return service.Query();
+        }
     }
 }

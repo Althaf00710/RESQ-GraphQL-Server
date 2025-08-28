@@ -12,11 +12,12 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
     {
         public async Task<RescueVehicleRequestPayload> CreateRescueVehicleRequest(
             RescueVehicleRequestCreateInput input, 
+            IFile? proofImage,
             [Service] IRescueVehicleRequestService service)
         {
             try
             {
-                var request = await service.Add(input);
+                var request = await service.Add(input, proofImage);
                 return new RescueVehicleRequestPayload(true, "Rescue vehicle request created successfully", request);
             }
             catch (ArgumentNullException ex)

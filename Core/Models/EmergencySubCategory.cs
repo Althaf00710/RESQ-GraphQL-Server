@@ -13,6 +13,7 @@ namespace Core.Models
         // Navigation property
         public EmergencyCategory EmergencyCategory { get; set; }
         public ICollection<FirstAidDetail> FirstAidDetails { get; set; }
+        public ICollection<RescueVehicleRequest> RescueVehicleRequests { get; set; }
 
     }
 }

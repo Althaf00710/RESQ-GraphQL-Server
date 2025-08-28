@@ -14,5 +14,6 @@ namespace Core.Services.Interfaces
         Task<bool> Restrict(int id);
         Task<bool> Unrestrict(int id);
         IQueryable<Civilian> Query();
+        Task<bool> NotifyCivilian(int id, string message);
     }
 }

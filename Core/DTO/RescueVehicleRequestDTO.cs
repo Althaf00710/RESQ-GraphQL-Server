@@ -13,12 +13,12 @@ namespace Core.DTO
         public int CivilianId { get; set; }
 
         [Required]
-        public int EmergencyCategoryId { get; set; }
+        public int EmergencySubCategoryId { get; set; }
 
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; }
+        public string Address { get; set; }
 
         [Required(ErrorMessage = "Longitude is required")]
         [Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180")]
@@ -35,5 +35,23 @@ namespace Core.DTO
     {
         [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; }
+    }
+
+    public class VehicleAssignmentResponseInput
+    {
+        public int RequestId { get; set; }
+        public int VehicleId { get; set; }
+        public bool Accepted { get; set; }
+    }
+
+    public class VehicleAssignmentOffer
+    {
+        public int RequestId { get; set; }
+        public int VehicleId { get; set; }       // receiver vehicle (for clarity)
+        public string Location { get; set; } = default!;
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public int OfferTtlSeconds { get; set; } = 15;
+        public DateTimeOffset OfferedAt { get; set; } = DateTimeOffset.Now;
     }
 }

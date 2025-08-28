@@ -14,7 +14,7 @@ namespace Core.Models
         public string PlateNumber { get; set; }
         [Required]
         public string Password { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } //Inactive, Active, OnMission
         [Required]
         public int RescueVehicleCategoryId { get; set; }
 

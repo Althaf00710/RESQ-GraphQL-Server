@@ -1,29 +1,46 @@
 ﻿using Application.Services.Generic;
+using Application.Utils;
 using AutoMapper;
 using Core.DTO;
 using Core.Models;
 using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
+using HotChocolate.Subscriptions;
+using HotChocolate.Types;
 using Microsoft.Extensions.Logging;
+using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Concurrent;
+using NetTopologySuite.Geometries;
+using Application.Utils.AssignmentOffer;
 
 namespace Application.Services
 {
     public class RescueVehicleRequestService : Service<RescueVehicleRequest>, IRescueVehicleRequestService
     {
         private readonly IRescueVehicleRequestRepository _repository;
+        private readonly IRescueVehicleLocationRepository _vehicleLocationRepository;
         private readonly ILogger<RescueVehicleRequestService> _logger;
         private readonly IMapper _mapper;
+        private readonly ICivilianService _civilianService;
+        private readonly ITopicEventSender _topicEventSender;
+        private readonly IAssignmentQueue _assignmentQueue;
 
-        public RescueVehicleRequestService(IRescueVehicleRequestRepository repository, ILogger<RescueVehicleRequestService> logger, IMapper mapper) : base(repository)
+        public RescueVehicleRequestService(IRescueVehicleRequestRepository repository, ILogger<RescueVehicleRequestService> logger,
+            IMapper mapper, ICivilianService civilianService, ITopicEventSender topicEventSender, IRescueVehicleLocationRepository vehicleLocationRepository,
+            IAssignmentQueue assignmentQueue) : base(repository)
         {
             _repository = repository;
+            _vehicleLocationRepository = vehicleLocationRepository;
             _logger = logger;
             _mapper = mapper;
+            _civilianService = civilianService;
+            _topicEventSender = topicEventSender;
+            _assignmentQueue = assignmentQueue;
         }
 
-        public async Task<RescueVehicleRequest> Add(RescueVehicleRequestCreateInput dto)
+        public async Task<RescueVehicleRequest> Add(RescueVehicleRequestCreateInput dto, IFile? image)
         {
-            _logger.LogInformation("Attempting to create new request", dto.EmergencyCategoryId);
+            _logger.LogInformation("Attempting to create new request", dto.EmergencySubCategoryId);
 
             try
             {
@@ -33,7 +50,7 @@ namespace Application.Services
                     throw new ArgumentNullException(nameof(dto), "Request data cannot be null");
                 }
 
-                var hasRecentRequest = await _repository.CheckRecentReportings(dto.Longitude, dto.Latitude, dto.EmergencyCategoryId);
+                var hasRecentRequest = await _repository.CheckRecentReportings(dto.Longitude, dto.Latitude, dto.EmergencySubCategoryId);
 
                 if (hasRecentRequest)
                 {
@@ -42,8 +59,30 @@ namespace Application.Services
 
                 var request = _mapper.Map<RescueVehicleRequest>(dto);
 
+                if (image is not null)
+                {
+                    try
+                    {
+                        request.ProofImageURL = await FileHandler.StoreImage("emergency-request", image);
+                        _logger.LogInformation("image stored at: {Path}", request.ProofImageURL);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to store image");
+                        throw new Exception("Failed to upload mage");
+                    }
+                }
+
                 await _repository.AddAsync(request);
                 await _repository.SaveAsync();
+
+                await _civilianService.NotifyCivilian(dto.CivilianId, "Your Rescue Vehicle request has been received and is being processed.");
+
+                var nearestVehicleIds = await _vehicleLocationRepository
+                    .GetNearestVehicleIdsAsync(dto.Latitude, dto.Longitude, maxCount: 5);
+
+                // Start the offer flow (15s per vehicle, stop on accept)
+                _assignmentQueue.Enqueue(request, nearestVehicleIds);
 
                 _logger.LogInformation("Successfully created new rescue request ID {RequestId} (Status: {Status})", request.Id, request.Status);
 
@@ -80,18 +119,9 @@ namespace Application.Services
                     throw new KeyNotFoundException($"Rescue vehicle request with ID {id} not found");
                 }
 
-                // Validate status transition
-                //if (!IsValidStatusTransition(request.Status, dto.Status))
-                //{
-                //    _logger.LogWarning("Invalid status transition from {OldStatus} to {NewStatus}",
-                //        request.Status, dto.Status);
-                //    throw new InvalidOperationException(
-                //        $"Cannot change status from {request.Status} to {dto.Status}");
-                //}
-
                 _mapper.Map(dto, request);
                 await _repository.SaveAsync();
-
+                await EventRequestUpdateAsync(request);
                 _logger.LogInformation("Successfully updated request ID {RequestId} to status {Status}", id, request.Status);
 
                 return request;
@@ -108,20 +138,13 @@ namespace Application.Services
             }
         }
 
-        //private bool IsValidStatusTransition(string currentStatus, string newStatus)
-        //{
-        //    var validTransitions = new Dictionary<string, List<string>>
-        //    {
-        //        ["Searching"] = new List<string> { "Dispatched", "Cancelled" },
-        //        ["Dispatched"] = new List<string> { "InProgress", "Cancelled" },
-        //        ["InProgress"] = new List<string> { "Completed", "Failed" },
-        //        ["Completed"] = new List<string>(),
-        //        ["Failed"] = new List<string>(),
-        //        ["Cancelled"] = new List<string>()
-        //    };
+        public IQueryable<RescueVehicleRequest> Query() =>
+            _repository.Query();
 
-        //    return validTransitions.TryGetValue(currentStatus, out var allowed) &&
-        //           allowed.Contains(newStatus);
-        //}
+        private async Task EventRequestUpdateAsync(RescueVehicleRequest request)
+        {
+            await _topicEventSender.SendAsync("VehicleRequestStatusChanged", request);
+        }
+
     }
 }

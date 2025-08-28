@@ -2,6 +2,7 @@
 using HotChocolate.Types;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using RESQserver_dotnet.Api.EmergencySubCategoryApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -56,17 +57,17 @@ namespace RESQserver_dotnet.Api.EmergencyCategoryApi
             //    });
 
             //// Add this if you have EmergencySubCategories relationship
-            //descriptor.Field(ec => ec.EmergencySubCategories)
-            //    .Description("Subcategories under this emergency category")
-            //    .Type<ListType<EmergencySubCategoryType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.EmergencySubCategories
-            //            .AsNoTracking()
-            //            .Where(esc => esc.EmergencyCategoryId == ctx.Parent<EmergencyCategory>().Id)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field(ec => ec.EmergencySubCategories)
+                .Description("Subcategories under this emergency category")
+                .Type<ListType<EmergencySubCategoryType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.EmergencySubCategories
+                        .AsNoTracking()
+                        .Where(esc => esc.EmergencyCategoryId == ctx.Parent<EmergencyCategory>().Id)
+                        .ToListAsync();
+                });
         }
     }
 }

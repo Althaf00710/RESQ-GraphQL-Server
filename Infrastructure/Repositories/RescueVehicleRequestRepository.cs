@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _geometryFactory = geometryFactory;
         }
 
-        public async Task<bool> CheckRecentReportings(double longitude, double latitude, int emergencyCategoryId)
+        public async Task<bool> CheckRecentReportings(double longitude, double latitude, int emergencySubCategoryId)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
 
                 // Distance is in meters when the column is 'geography'
                 var exists = await _context.RescueVehicleRequests
-                    .Where(r => r.EmergencyCategoryId == emergencyCategoryId && r.CreatedAt >= timeThreshold)
+                    .Where(r => r.EmergencySubCategoryId == emergencySubCategoryId && r.CreatedAt >= timeThreshold)
                     .Where(r => r.Location != null && r.Location.Distance(searchPoint) <= SearchRadiusMeters)
                     .AnyAsync();
 
@@ -40,5 +40,8 @@ namespace Infrastructure.Repositories
                 throw new Exception("Error checking recent reportings", ex);
             }
         }
+
+        public IQueryable<RescueVehicleRequest> Query() =>
+            _context.RescueVehicleRequests.AsNoTracking();
     }
 }

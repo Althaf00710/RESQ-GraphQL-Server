@@ -58,7 +58,7 @@ namespace Application.Services
 
             try
             {
-                civilian.JoinedDate = DateTime.UtcNow;
+                civilian.JoinedDate = DateTime.Now;
                 civilian.CivilianStatusId = 1;
                 await _repository.AddAsync(civilian);
                 await _repository.SaveAsync();
@@ -216,5 +216,18 @@ namespace Application.Services
         public IQueryable<Civilian> Query() =>
             _repository.Query();
 
+        public async Task<bool> NotifyCivilian(int id, string message)
+        {
+            var civilian = await _repository.GetByIdAsync(id);
+            if (civilian == null)
+            {
+                _logger.LogWarning("Civilian with ID {Id} not found", id);
+                return false;
+            }
+            await _smsSender.SendSmsAsync(civilian.PhoneNumber, message);
+            if (!string.IsNullOrWhiteSpace(civilian.Email))
+                await _emailSender.SendEmailAsync(civilian.Email, "Notification from ResQ", message);
+            return true;
+        }
     }
 }

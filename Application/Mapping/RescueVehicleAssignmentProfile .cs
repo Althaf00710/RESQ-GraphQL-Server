@@ -16,8 +16,7 @@ namespace Application.Mapping
             // Create Mapping
             CreateMap<AssignmentCreateInput, RescueVehicleAssignment>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(_ => DateTime.UtcNow))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Dispatched")) // Default status
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(_ => DateTime.Now))
                 .ForMember(dest => dest.ArrivalTime, opt => opt.Ignore())
                 .ForMember(dest => dest.DepartureTime, opt => opt.Ignore())
                 .ForMember(dest => dest.RescueVehicleRequest, opt => opt.Ignore())
@@ -25,11 +24,10 @@ namespace Application.Mapping
 
             // Update Mapping
             CreateMap<AssignmentUpdateInput, RescueVehicleAssignment>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.ArrivalTime, opt => opt.MapFrom(src =>
-                    src.Status == "Arrived" ? DateTime.UtcNow : (DateTime?)null))
+                    src.Status == "Arrived" ? DateTime.Now : (DateTime?)null))
                 .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src =>
-                    src.Status == "Completed" ? DateTime.UtcNow : (DateTime?)null));
+                    src.Status == "Completed" ? DateTime.Now : (DateTime?)null));
         }
     }
 }

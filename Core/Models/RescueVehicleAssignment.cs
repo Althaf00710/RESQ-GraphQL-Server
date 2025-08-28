@@ -12,7 +12,6 @@ namespace Core.Models
         [Required]
         public int RescueVehicleId { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Status { get; set; }
         public DateTime? ArrivalTime { get; set; }
         public DateTime? DepartureTime { get; set; }
 

@@ -15,18 +15,21 @@ namespace Application.Services
         private readonly IRescueVehicleRepository _vehicleRepository;
         private readonly ILogger<RescueVehicleAssignmentService> _logger;
         private readonly IMapper _mapper;
+        private readonly IRescueVehicleRequestService _rescueVehicleRequestService;
 
         public RescueVehicleAssignmentService(IRescueVehicleAssignmentRepository repository,
             IRescueVehicleRequestRepository requestRepository,
             IRescueVehicleRepository vehicleRepository,
             ILogger<RescueVehicleAssignmentService> logger, 
-            IMapper mapper) : base(repository)
+            IMapper mapper,
+            IRescueVehicleRequestService rescueVehicleRequestService) : base(repository)
         {
             _repository = repository;
             _requestRepository = requestRepository;
             _vehicleRepository = vehicleRepository;
             _logger = logger;
             _mapper = mapper;
+            _rescueVehicleRequestService = rescueVehicleRequestService;
         }
 
         public async Task<RescueVehicleAssignment> Add(AssignmentCreateInput dto)
@@ -38,8 +41,8 @@ namespace Application.Services
                 await ValidateAssignmentCreation(dto);
 
                 var assignment = _mapper.Map<RescueVehicleAssignment>(dto);
-                assignment.Timestamp = DateTime.UtcNow;
-                assignment.Status = "Dispatched";
+                assignment.Timestamp = DateTime.Now;
+                await _rescueVehicleRequestService.Update(dto.RescueVehicleRequestId, new RescueVehicleRequestUpdateInput { Status = "Dispatched" });
 
                 await _repository.AddAsync(assignment);
                 await _repository.SaveAsync();
@@ -61,13 +64,41 @@ namespace Application.Services
 
             try
             {
-                var assignment = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException("Assignment not found");
-                ValidateStatusTransition(assignment.Status, dto.Status);
-                UpdateAssignmentStatus(assignment, dto.Status);
+                var assignment = await _repository.GetByIdAsync(id)
+                    ?? throw new KeyNotFoundException("Assignment not found");
+
+                // Load the owning request (status now lives here)
+                var request = await _requestRepository.GetByIdAsync(assignment.RescueVehicleRequestId)
+                    ?? throw new KeyNotFoundException($"Rescue vehicle request {assignment.RescueVehicleRequestId} not found");
+
+                // Validate transition using the request's current status
+                ValidateRequestStatusTransition(request.Status, dto.Status);
+
+                // Timestamps that are tied to the assignment’s lifecycle
+                var now = DateTime.Now;
+                switch (dto.Status)
+                { 
+                    case "Arrived":
+                        assignment.ArrivalTime ??= now;
+                        break;
+
+                    case "Completed":
+                        assignment.DepartureTime ??= now;
+                        break;
+
+                    case "Cancelled":
+                        assignment.ArrivalTime = null;
+                        assignment.DepartureTime = null;
+                        break;
+                }
+
+                // Persist request status change + broadcast subscription event
+                await _rescueVehicleRequestService.Update(request.Id,
+                    new RescueVehicleRequestUpdateInput { Status = dto.Status });
+
                 await _repository.SaveAsync();
 
-                _logger.LogInformation("Successfully updated assignment {AssignmentId} to {Status}", id, assignment.Status);
-
+                _logger.LogInformation("Successfully updated assignment {AssignmentId}; request {RequestId} now {Status}", id, request.Id, dto.Status);
                 return assignment;
             }
             catch (InvalidOperationException ex)
@@ -82,48 +113,24 @@ namespace Application.Services
             }
         }
 
-        private void ValidateStatusTransition(string currentStatus, string newStatus)
+
+        private void ValidateRequestStatusTransition(string currentRequestStatus, string newStatus)
         {
-            var validTransitions = new Dictionary<string, List<string>>
+            var transitions = new Dictionary<string, List<string>>
             {
-                ["Dispatched"] = new() { "EnRoute", "Cancelled" },
-                ["EnRoute"] = new() { "Arrived", "Cancelled" },
+                ["Searching"] = new() { "Dispatched", "Cancelled" },
+                ["Dispatched"] = new() { "Cancelled" },
                 ["Arrived"] = new() { "Completed" },
                 ["Completed"] = new(),
-                ["Cancelled"] = new()
+                ["Cancelled"] = new(),
             };
 
-            if (!validTransitions.TryGetValue(currentStatus, out var allowed) ||
+            if (!transitions.TryGetValue(currentRequestStatus ?? "", out var allowed) ||
                 !allowed.Contains(newStatus))
             {
                 throw new InvalidOperationException(
-                    $"Invalid status transition from {currentStatus} to {newStatus}. " +
-                    $"Allowed transitions: {(allowed?.Any() == true ? string.Join(", ", allowed) : "none")}");
-            }
-        }
-
-        private void UpdateAssignmentStatus(RescueVehicleAssignment assignment, string newStatus)
-        {
-            var now = DateTime.UtcNow;
-            assignment.Status = newStatus;
-
-            switch (newStatus)
-            {
-                case "Arrived":
-                    assignment.ArrivalTime ??= now; // Only set if null
-                    break;
-
-                case "Completed":
-                    assignment.DepartureTime ??= now;
-                    // Ensure arrival time is set if completing
-                    assignment.ArrivalTime ??= now;
-                    break;
-
-                case "Cancelled":
-                    // Clear future timestamps if cancelling
-                    assignment.ArrivalTime = null;
-                    assignment.DepartureTime = null;
-                    break;
+                    $"Invalid status transition from '{currentRequestStatus}' to '{newStatus}'. " +
+                    $"Allowed: {(allowed?.Any() == true ? string.Join(", ", allowed) : "none")}");
             }
         }
 
@@ -151,11 +158,10 @@ namespace Application.Services
             {
                 _logger.LogWarning("Vehicle {VehicleId} already assigned to request {ExistingRequestId} (Status: {Status})",
                     dto.RescueVehicleId,
-                    activeAssignment.RescueVehicleRequestId,
-                    activeAssignment.Status);
+                    activeAssignment.RescueVehicleRequestId);
 
                 throw new InvalidOperationException(
-                    $"Vehicle {dto.RescueVehicleId} is currently assigned to request {activeAssignment.RescueVehicleRequestId} (Status: {activeAssignment.Status})");
+                    $"Vehicle {dto.RescueVehicleId} is currently assigned to request {activeAssignment.RescueVehicleRequestId})");
             }
         }
     }

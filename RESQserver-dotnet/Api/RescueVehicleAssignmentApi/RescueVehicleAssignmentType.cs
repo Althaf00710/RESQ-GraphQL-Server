@@ -16,10 +16,6 @@ namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
                 .Description("The unique identifier for the assignment")
                 .Type<NonNullType<IdType>>();
 
-            descriptor.Field(a => a.Status)
-                .Description("Current status of the assignment (Dispatched, EnRoute, Arrived, Completed, Cancelled)")
-                .Type<NonNullType<StringType>>();
-
             // Timestamp Fields
             descriptor.Field(a => a.Timestamp)
                 .Description("When the assignment was initially created")
@@ -55,15 +51,6 @@ namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
                         return null;
 
                     return (assignment.DepartureTime - assignment.ArrivalTime)?.TotalMinutes;
-                });
-
-            descriptor.Field("isActive")
-                .Description("Whether the assignment is currently active")
-                .Type<NonNullType<BooleanType>>()
-                .Resolve(ctx =>
-                {
-                    var status = ctx.Parent<RescueVehicleAssignment>().Status;
-                    return status is "Dispatched" or "EnRoute" or "Arrived";
                 });
         }
 

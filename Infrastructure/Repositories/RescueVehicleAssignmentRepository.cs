@@ -19,10 +19,13 @@ namespace Infrastructure.Repositories
             return await _context.RescueVehicleAssignments
                 .Include(a => a.RescueVehicleRequest)
                 .Include(a => a.RescueVehicle)
-                .FirstOrDefaultAsync(a =>
+                .Where(a =>
                     a.RescueVehicleId == vehicleId &&
-                    a.Status != "Completed" &&
-                    a.Status != "Cancelled");
+                    a.RescueVehicleRequest.Status != "Completed" &&
+                    a.RescueVehicleRequest.Status != "Cancelled" &&
+                    a.DepartureTime == null)
+                .OrderByDescending(a => a.Timestamp) 
+                .FirstOrDefaultAsync();
         }
     }
 }
