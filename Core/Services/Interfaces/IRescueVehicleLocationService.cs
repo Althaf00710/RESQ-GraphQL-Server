@@ -8,5 +8,6 @@ namespace Core.Services.Interfaces
     {
         Task<RescueVehicleLocation> Handle(RescueVehicleLocationInput dto);
         Task MarkInactiveAsync(int rescueVehicleId);
+        Task<RescueVehicleLocation?> GetByRescueVehicleId(int rescueVehicleId);
     }
 }

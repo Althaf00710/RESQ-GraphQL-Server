@@ -8,6 +8,6 @@ namespace Core.Repositories.Interfaces
     {
         Task<bool> CheckRescueVehicleId(int rescueVehicleId);
         Task<RescueVehicleLocation> GetByRescueVehicleId(int rescueVehicleId);
-        Task<List<int>> GetNearestVehicleIdsAsync(double latitude, double longitude, int maxCount = 5);
+        Task<List<int>> GetNearestVehicleIdsAsync(double latitude, double longitude,int subCategoryId, int maxCount = 5);
     }
 }

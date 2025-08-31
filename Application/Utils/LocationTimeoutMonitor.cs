@@ -12,8 +12,8 @@ public class LocationTimeoutMonitor : IHostedService, IDisposable
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<LocationTimeoutMonitor> _logger;
     private Timer _timer;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
-    private readonly TimeSpan _timeout = TimeSpan.FromSeconds(20);
+    private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
 
     public LocationTimeoutMonitor(
         IServiceScopeFactory scopeFactory,

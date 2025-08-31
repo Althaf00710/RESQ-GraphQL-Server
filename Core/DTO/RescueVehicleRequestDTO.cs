@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models;
 
 namespace Core.DTO
 {
@@ -46,12 +47,9 @@ namespace Core.DTO
 
     public class VehicleAssignmentOffer
     {
-        public int RequestId { get; set; }
-        public int VehicleId { get; set; }       // receiver vehicle (for clarity)
-        public string Location { get; set; } = default!;
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
         public int OfferTtlSeconds { get; set; } = 15;
         public DateTimeOffset OfferedAt { get; set; } = DateTimeOffset.Now;
+        public bool IsCancelled { get; set; } = false;
+        public RescueVehicleRequest Request { get; set; } = default!;
     }
 }

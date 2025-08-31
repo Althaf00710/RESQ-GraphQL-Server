@@ -10,9 +10,10 @@ using Core.Repositories.Interfaces;
 using Core.Services.Interfaces;
 using HotChocolate.Subscriptions;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Geometries;
+using NetTopologySuite;
 
-public class RescueVehicleLocationService
-    : Service<RescueVehicleLocation>, IRescueVehicleLocationService
+public class RescueVehicleLocationService: Service<RescueVehicleLocation>, IRescueVehicleLocationService
 {
     // track whether we've persisted the “initial” record for each vehicle
     private static readonly ConcurrentDictionary<int, bool> _hasInitial
@@ -44,7 +45,7 @@ public class RescueVehicleLocationService
     {
         if (dto is null) throw new ArgumentNullException(nameof(dto));
 
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         _lastSeen.AddOrUpdate(dto.RescueVehicleId, now, (_, __) => now);
 
         // 1) Try to load the existing single row for this vehicle
@@ -71,11 +72,11 @@ public class RescueVehicleLocationService
             existing.LastActive = now;
             existing.Address = dto.Address;
 
-            // If you store geometry with NTS, assign the mapped point/geometry here:
-            // existing.Location = _mapper.Map<NetTopologySuite.Geometries.Geometry>(dto.Location);
-            // (or however your mapper is set up)
+            var gf = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            // NTS uses X=Longitude, Y=Latitude
+            existing.Location = gf.CreatePoint(new Coordinate(dto.Longitude, dto.Latitude));
 
-            _repository.Update(existing); // no-op if tracked; ok if detached with EF Core
+            await _repository.Update(existing); // no-op if tracked; ok if detached with EF Core
             await _repository.SaveAsync();
 
             await _sender.SendAsync("VehicleLocationShare", existing);
@@ -89,11 +90,17 @@ public class RescueVehicleLocationService
         if (existing == null || !existing.Active) return;
 
         existing.Active = false;
+        existing.LastActive = DateTime.Now;
         // keep LastActive as the last ping time; don't overwrite unless you want the timeout moment
-        _repository.Update(existing);
+        await _repository.Update(existing);
         await _repository.SaveAsync();
 
         _logger.LogInformation("Marked vehicle {id} inactive after timeout", rescueVehicleId);
         await _sender.SendAsync("VehicleLocationShare", existing);
     }
+
+    public async Task<RescueVehicleLocation?> GetByRescueVehicleId(int rescueVehicleId)
+    {
+        return await _repository.GetByRescueVehicleId(rescueVehicleId);
+    }   
 }

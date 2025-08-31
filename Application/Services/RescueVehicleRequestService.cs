@@ -79,7 +79,7 @@ namespace Application.Services
                 await _civilianService.NotifyCivilian(dto.CivilianId, "Your Rescue Vehicle request has been received and is being processed.");
 
                 var nearestVehicleIds = await _vehicleLocationRepository
-                    .GetNearestVehicleIdsAsync(dto.Latitude, dto.Longitude, maxCount: 5);
+                    .GetNearestVehicleIdsAsync(dto.Latitude, dto.Longitude, dto.EmergencySubCategoryId, maxCount: 5);
 
                 // Start the offer flow (15s per vehicle, stop on accept)
                 _assignmentQueue.Enqueue(request, nearestVehicleIds);
@@ -121,6 +121,12 @@ namespace Application.Services
 
                 _mapper.Map(dto, request);
                 await _repository.SaveAsync();
+
+                if (string.Equals(request.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+                {
+                    _assignmentQueue.Cancel(request.Id);
+                }
+
                 await EventRequestUpdateAsync(request);
                 _logger.LogInformation("Successfully updated request ID {RequestId} to status {Status}", id, request.Status);
 
