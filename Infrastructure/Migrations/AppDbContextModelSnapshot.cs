@@ -336,10 +336,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("RescueVehicleRequestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 

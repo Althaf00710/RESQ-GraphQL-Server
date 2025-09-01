@@ -3,8 +3,11 @@ using Core.Repositories.Interfaces;
 
 namespace RESQserver_dotnet.Api.RescueVehicleAssignmentApi
 {
+    [ExtendObjectType<Query>]
     public class RescueVehicleAssignmentQuery
     {
+        [UseFiltering]
+        [UseSorting]
         public async Task<IEnumerable<RescueVehicleAssignment>> GetAssignments([Service] IRescueVehicleAssignmentRepository repository)
         {
             return await repository.GetAllAsync();

@@ -119,7 +119,7 @@ namespace Application.Services
             var transitions = new Dictionary<string, List<string>>
             {
                 ["Searching"] = new() { "Dispatched", "Cancelled" },
-                ["Dispatched"] = new() { "Cancelled" },
+                ["Dispatched"] = new() { "Arrived", "Cancelled" },
                 ["Arrived"] = new() { "Completed" },
                 ["Completed"] = new(),
                 ["Cancelled"] = new(),

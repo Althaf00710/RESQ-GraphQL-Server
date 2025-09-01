@@ -7,7 +7,7 @@ using NetTopologySuite.Geometries;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class initital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -357,7 +357,6 @@ namespace Infrastructure.Migrations
                     RescueVehicleRequestId = table.Column<int>(type: "int", nullable: false),
                     RescueVehicleId = table.Column<int>(type: "int", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DepartureTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
