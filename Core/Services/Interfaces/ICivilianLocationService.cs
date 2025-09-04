@@ -7,6 +7,7 @@ namespace Core.Services.Interfaces
     public interface ICivilianLocationService : IService<CivilianLocation>
     {
         Task<CivilianLocation> Handle(CivilianLocationInput dto);
+        Task MarkInactiveAsync(int civilianId);
         Task<CivilianLocation> GetByCivilianId(int civilianId);
     }
 }

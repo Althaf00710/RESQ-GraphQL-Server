@@ -144,6 +144,8 @@ builder.Services
     .AddTypeExtension<RescueVehicleLocationSubscription>()
     .AddTypeExtension<RescueVehicleRequestSubscription>()
     .AddTypeExtension<RescueVehicleAssignmentSubscription>()
+    .AddTypeExtension<CivilianLocationSubscription>()
+    .AddTypeExtension<CivilianSubscription>()
 
     .AddType<UserType>()
     .AddType<CivilianStatusType>()

@@ -28,4 +28,11 @@ namespace Core.DTO
         public string JwtToken { get; set; }
         public Civilian Civilian { get; set; }
     }
+
+    public class NearbyEmergencyPayload
+    {
+        public RescueVehicleRequest Emergency { get; set; } 
+        public int CivilianId { get; set; } 
+        
+    }
 }

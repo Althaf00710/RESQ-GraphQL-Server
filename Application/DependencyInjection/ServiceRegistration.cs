@@ -42,6 +42,7 @@ namespace Application.DependencyInjection
             services.AddHttpClient<SnakePredictor>();
 
             services.AddHostedService<LocationTimeoutMonitor>();
+            services.AddHostedService<CivilianLocationTimeoutMonitor>();
 
             services.AddSingleton<IAssignmentQueue, AssignmentQueue>();
 

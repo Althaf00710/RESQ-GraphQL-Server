@@ -15,7 +15,7 @@ namespace Core.Models
         public Point Location { get; set; }
         public string? Address { get; set; }
         public bool Active { get; set; }
-        public DateTime LastActive { get; set; } = DateTime.UtcNow;
+        public DateTime LastActive { get; set; } = DateTime.Now;
          
 
         [ForeignKey(nameof(CivilianId))]

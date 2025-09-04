@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
     {
         private readonly AppDbContext _context;
         private readonly GeometryFactory _geometryFactory;
-        private const double SearchRadiusMeters = 50;
+        private const double SearchRadiusMeters = 20;
         private const int TimeGapMinutes = 10; // In Sri Lanka Average response time is 11 - 15 minutes
 
         public RescueVehicleRequestRepository(AppDbContext context, GeometryFactory geometryFactory) : base(context)
@@ -24,13 +24,20 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var timeThreshold = DateTime.UtcNow.AddMinutes(-TimeGapMinutes);
+                // If CreatedAt is stored in UTC, prefer UtcNow.
+                var timeThreshold = DateTime.Now.AddMinutes(-TimeGapMinutes);
+
                 var searchPoint = _geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
 
-                // Distance is in meters when the column is 'geography'
                 var exists = await _context.RescueVehicleRequests
-                    .Where(r => r.EmergencySubCategoryId == emergencySubCategoryId && r.CreatedAt >= timeThreshold)
-                    .Where(r => r.Location != null && r.Location.Distance(searchPoint) <= SearchRadiusMeters)
+                    .AsNoTracking()
+                    .Where(r =>
+                        r.EmergencySubCategoryId == emergencySubCategoryId &&
+                        r.CreatedAt >= timeThreshold &&
+                        (r.Status == "Searching" || r.Status == "Dispatched") &&  // <-- status filter
+                        r.Location != null &&
+                        r.Location.Distance(searchPoint) <= SearchRadiusMeters     // geography STDistance (meters)
+                    )
                     .AnyAsync();
 
                 return exists;

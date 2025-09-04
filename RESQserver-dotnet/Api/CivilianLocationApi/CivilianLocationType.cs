@@ -4,7 +4,6 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using RESQserver_dotnet.Api.CivilianApi;
-using System.Threading.Tasks;
 
 namespace RESQserver_dotnet.Api.CivilianLocationApi
 {
@@ -12,7 +11,10 @@ namespace RESQserver_dotnet.Api.CivilianLocationApi
     {
         protected override void Configure(IObjectTypeDescriptor<CivilianLocation> descriptor)
         {
-            descriptor.Description("Represents a civilian's geo‐location and address in the emergency response system.");
+            descriptor.Description("Represents a civilian's geo-location and address in the emergency response system.");
+
+            // NTS geometry is not a GraphQL scalar: expose as lat/long instead
+            descriptor.Ignore(cl => cl.Location);
 
             descriptor.Field(cl => cl.Id)
                 .Type<NonNullType<IdType>>()
@@ -23,24 +25,29 @@ namespace RESQserver_dotnet.Api.CivilianLocationApi
                 .Description("FK to the civilian.");
 
             descriptor.Field(cl => cl.Address)
-                .Type<NonNullType<StringType>>()
-                .Description("Human‐readable address or description.");
+                .Type<StringType>() // nullable in model → keep nullable here
+                .Description("Human-readable address or description.");
 
             descriptor.Field(cl => cl.Active)
                 .Type<NonNullType<BooleanType>>()
                 .Description("Whether this is the civilian's current active location.");
 
-            // Expose the Point as latitude & longitude 
+            descriptor.Field(cl => cl.LastActive)
+                .Type<NonNullType<DateTimeType>>()
+                .Description("Timestamp when this location was last active.");
+
+            // Expose Point as latitude/longitude (Y/X)
             descriptor.Field("latitude")
                 .Type<NonNullType<FloatType>>()
                 .Description("Latitude (Y) of the Point.")
-                .Resolve(ctx => ((Point)ctx.Parent<CivilianLocation>().Location).Y);
+                .Resolve(ctx => ctx.Parent<CivilianLocation>().Location.Y);
 
             descriptor.Field("longitude")
                 .Type<NonNullType<FloatType>>()
                 .Description("Longitude (X) of the Point.")
-                .Resolve(ctx => ((Point)ctx.Parent<CivilianLocation>().Location).X);
+                .Resolve(ctx => ctx.Parent<CivilianLocation>().Location.X);
 
+            // Navigation
             descriptor.Field(cl => cl.Civilian)
                 .Type<NonNullType<CivilianType>>()
                 .Description("The associated civilian.")
