@@ -42,7 +42,7 @@ namespace Application.Utils.AssignmentOffer
         {
             if (vehicleIds == null || vehicleIds.Count == 0)
             {
-                _logger.LogInformation("No active vehicles nearby for request {RequestId}", request.Id);
+                _logger.LogInformation("---------------------------------No active vehicles nearby for request {RequestId}", request.Id);
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace Application.Utils.AssignmentOffer
 
                 if (!success && !state.IsCancelled)
                 {
-                    _logger.LogInformation("No vehicle accepted request {RequestId}.", request.Id);
+                    _logger.LogInformation("------------------------No vehicle accepted request {RequestId}.", request.Id);
                 }
             }
             catch (Exception ex)
@@ -164,7 +164,7 @@ namespace Application.Utils.AssignmentOffer
             await _sender.SendAsync(topic, offer);
 
             state.MarkNotified(vehicleId); // track for later cancel broadcasting
-            _logger.LogInformation("Offered request {RequestId} to vehicle {VehicleId}", request.Id, vehicleId);
+            _logger.LogInformation("----------------Offered request {RequestId} to vehicle {VehicleId}", request.Id, vehicleId);
         }
 
         private async Task PublishCancelAsync(int vehicleId, RescueVehicleRequest request)
@@ -252,6 +252,7 @@ namespace Application.Utils.AssignmentOffer
             await requestRepo.SaveAsync();
 
             await _sender.SendAsync("VehicleRequestStatusChanged", req);
+            await _sender.SendAsync($"VehicleRequestStatusChanged_{req.Id}", req);
 
             _logger.LogInformation("Request {RequestId} accepted by vehicle {VehicleId}", requestId, vehicleId);
             return true;

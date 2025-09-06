@@ -189,6 +189,7 @@ namespace Application.Services
         private async Task EventRequestUpdateAsync(RescueVehicleRequest request)
         {
             await _topicEventSender.SendAsync("VehicleRequestStatusChanged", request);
+            await _topicEventSender.SendAsync($"VehicleRequestStatusChanged_{request.Id}", request);
         }
 
     }

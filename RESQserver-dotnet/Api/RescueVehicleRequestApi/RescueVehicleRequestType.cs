@@ -75,11 +75,10 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
                 .Type<CivilianApi.CivilianType>()
                 .ResolveWith<Resolvers>(r => r.GetCivilian(default!, default!));
 
-            // If you later want to expose assignments, uncomment and keep as-is.
-            // descriptor.Field("rescueVehicleAssignments")
-            //     .Description("List of vehicles assigned to this request")
-            //     .Type<ListType<RescueVehicleAssignmentApi.RescueVehicleAssignmentType>>()
-            //     .ResolveWith<Resolvers>(r => r.GetAssignments(default!, default!));
+            descriptor.Field("rescueVehicleAssignments")
+                .Description("List of vehicles assigned to this request")
+                .Type<RescueVehicleAssignmentApi.RescueVehicleAssignmentType>()
+                .ResolveWith<Resolvers>(r => r.GetAssignments(default!, default!));
 
             // Computed field
             descriptor.Field("isActive")
@@ -103,12 +102,11 @@ namespace RESQserver_dotnet.Api.RescueVehicleRequestApi
                 await dbContext.Civilians
                     .FirstOrDefaultAsync(c => c.Id == request.CivilianId);
 
-            public async Task<IEnumerable<RescueVehicleAssignment>> GetAssignments(
+            public async Task<RescueVehicleAssignment> GetAssignments(
                 [Parent] RescueVehicleRequest request,
                 [Service] AppDbContext dbContext) =>
                 await dbContext.RescueVehicleAssignments
-                    .Where(a => a.RescueVehicleRequestId == request.Id)
-                    .ToListAsync();
+                    .FirstOrDefaultAsync(a => a.RescueVehicleRequestId == request.Id);
         }
     }
 }

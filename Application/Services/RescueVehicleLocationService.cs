@@ -62,6 +62,7 @@ public class RescueVehicleLocationService: Service<RescueVehicleLocation>, IResc
             await _repository.SaveAsync();
 
             await _sender.SendAsync("VehicleLocationShare", entity);
+            await _sender.SendAsync($"VehicleLocationShare_{entity.RescueVehicleId}", entity);
             return entity;
         }
         else
@@ -80,6 +81,7 @@ public class RescueVehicleLocationService: Service<RescueVehicleLocation>, IResc
             await _repository.SaveAsync();
 
             await _sender.SendAsync("VehicleLocationShare", existing);
+            await _sender.SendAsync($"VehicleLocationShare_{existing.RescueVehicleId}", existing);
             return existing;
         }
     }
@@ -97,6 +99,7 @@ public class RescueVehicleLocationService: Service<RescueVehicleLocation>, IResc
 
         _logger.LogInformation("Marked vehicle {id} inactive after timeout", rescueVehicleId);
         await _sender.SendAsync("VehicleLocationShare", existing);
+        await _sender.SendAsync($"VehicleLocationShare_{existing.RescueVehicleId}", existing);
     }
 
     public async Task<RescueVehicleLocation?> GetByRescueVehicleId(int rescueVehicleId)

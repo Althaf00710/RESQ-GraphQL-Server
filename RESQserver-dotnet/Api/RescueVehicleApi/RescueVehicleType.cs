@@ -5,6 +5,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using RESQserver_dotnet.Api.RescueVehicleAssignmentApi;
 using RESQserver_dotnet.Api.RescueVehicleCategoryApi;
+using RESQserver_dotnet.Api.RescueVehicleLocationApi;
 using System.Threading.Tasks;
 
 namespace RESQserver_dotnet.Api.RescueVehicleApi
@@ -49,31 +50,31 @@ namespace RESQserver_dotnet.Api.RescueVehicleApi
 
             descriptor.Field(r => r.Password).Ignore();
 
-            //descriptor.Field(r => r.RescueVehicleLocations)
-            //    .Description("Location history of this vehicle")
-            //    .Type<ListType<RescueVehicleLocationType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.RescueVehicleLocations
-            //            .AsNoTracking()
-            //            .Where(l => l.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
-            //            .OrderByDescending(l => l.Timestamp)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field(r => r.RescueVehicleLocations)
+                .Description("Location history of this vehicle")
+                .Type<ListType<RescueVehicleLocationType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.RescueVehicleLocations
+                        .AsNoTracking()
+                        .Where(l => l.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
+                        .OrderByDescending(l => l.LastActive)
+                        .ToListAsync();
+                });
 
-            //descriptor.Field(r => r.RescueVehicleAssignment)
-            //    .Description("Assignment history of this vehicle")
-            //    .Type<ListType<RescueVehicleAssignmentType>>()
-            //    .Resolve(async ctx =>
-            //    {
-            //        var db = ctx.Service<AppDbContext>();
-            //        return await db.RescueVehicleAssignments
-            //            .AsNoTracking()
-            //            .Where(a => a.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
-            //            .OrderByDescending(a => a.AssignmentTime)
-            //            .ToListAsync();
-            //    });
+            descriptor.Field(r => r.RescueVehicleAssignment)
+                .Description("Assignment history of this vehicle")
+                .Type<ListType<RescueVehicleAssignmentType>>()
+                .Resolve(async ctx =>
+                {
+                    var db = ctx.Service<AppDbContext>();
+                    return await db.RescueVehicleAssignments
+                        .AsNoTracking()
+                        .Where(a => a.RescueVehicleId == ctx.Parent<RescueVehicle>().Id)
+                        .OrderByDescending(a => a.Timestamp)
+                        .ToListAsync();
+                });
         }
     }
 }
